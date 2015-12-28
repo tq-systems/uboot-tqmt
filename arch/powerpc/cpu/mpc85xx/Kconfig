@@ -143,6 +143,10 @@ config TARGET_STXGP3
 config TARGET_STXSSA
 	bool "Support stxssa"
 
+config TARGET_TQMT1042
+        bool "Support TQMT1042"
+        select SUPPORT_SPL
+
 config TARGET_XPEDITE520X
 	bool "Support xpedite520x"
 
@@ -193,6 +197,7 @@ source "board/sbc8548/Kconfig"
 source "board/socrates/Kconfig"
 source "board/stx/stxgp3/Kconfig"
 source "board/stx/stxssa/Kconfig"
+source "board/tqc/tqmt1042/Kconfig"
 source "board/xes/xpedite520x/Kconfig"
 source "board/xes/xpedite537x/Kconfig"
 source "board/xes/xpedite550x/Kconfig"

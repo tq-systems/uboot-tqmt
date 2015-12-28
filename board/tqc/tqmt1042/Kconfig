@@ -1,0 +1,12 @@
+if TARGET_TQMT1042
+
+config SYS_BOARD
+	default "tqmt1042"
+
+config SYS_VENDOR
+	default "tqc"
+
+config SYS_CONFIG_NAME
+	default "TQMT1042"
+
+endif

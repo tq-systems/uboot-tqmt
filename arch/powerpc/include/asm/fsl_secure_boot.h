@@ -38,6 +38,7 @@
 	defined(CONFIG_T2080RDB) || \
 	defined(CONFIG_T1040QDS) || \
 	defined(CONFIG_T104xRDB) || \
+	defined(CONFIG_TQMT1042) || \
 	defined(CONFIG_PPC_T1023) || \
 	defined(CONFIG_PPC_T1024)
 #define CONFIG_SYS_CPC_REINIT_F
