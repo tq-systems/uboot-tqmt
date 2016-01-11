@@ -215,7 +215,7 @@
 #define CONFIG_SYS_FLASH_QUIET_TEST
 #define CONFIG_FLASH_SHOW_PROGRESS	45 /* count down from 45/5: 9..1 */
 
-#define CONFIG_SYS_MAX_FLASH_BANKS	2	/* number of banks */
+#define CONFIG_SYS_MAX_FLASH_BANKS	1	/* number of banks */
 #define CONFIG_SYS_MAX_FLASH_SECT	1024	/* sectors per device */
 #define CONFIG_SYS_FLASH_ERASE_TOUT	60000	/* Flash Erase Timeout (ms) */
 #define CONFIG_SYS_FLASH_WRITE_TOUT	500	/* Flash Write Timeout (ms) */
@@ -452,7 +452,6 @@
 #ifdef CONFIG_MMC
 #define CONFIG_FSL_ESDHC
 #define CONFIG_SYS_FSL_ESDHC_ADDR       CONFIG_SYS_MPC85xx_ESDHC_ADDR
-#define CONFIG_ESDHC_DETECT_QUIRK 1 /* TODO: card detect at the moment not functional, remove later */
 #define CONFIG_CMD_MMC
 #define CONFIG_GENERIC_MMC
 #define CONFIG_CMD_EXT2
@@ -491,10 +490,8 @@
 #define  CONFIG_SYS_DPAA_FMAN
 #define CONFIG_SYS_DPAA_PME
 
-#if 0 /* TODO */
 #define CONFIG_QE
 #define CONFIG_U_QE
-#endif
 
 #if defined(CONFIG_SDCARD)
 /*
@@ -509,12 +506,10 @@
 #define CONFIG_SYS_FMAN_FW_ADDR		0xEFF00000
 #endif
 
-#if 0  /* TODO */
 #if defined(CONFIG_SDCARD)
 #define CONFIG_SYS_QE_FW_ADDR		(512 * 0x920)
 #else
 #define CONFIG_SYS_QE_FW_ADDR		0xEFF10000
-#endif
 #endif
 
 
