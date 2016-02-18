@@ -11,7 +11,6 @@
 /*
  * TQMT1042 board configuration file
  */
-/*#define CONFIG_TQMT1042*/
 #define CONFIG_PHYS_64BIT
 #define CONFIG_SYS_GENERIC_BOARD
 #define CONFIG_DISPLAY_BOARDINFO
@@ -299,7 +298,6 @@
 #define CONFIG_SYS_HUSH_PARSER
 #define CONFIG_SYS_PROMPT_HUSH_PS2 "> "
 
-#if 0 /* TODO: add support for LVDS display */
 /* Video */
 #define CONFIG_FSL_DIU_FB
 
@@ -314,7 +312,6 @@
 #define CONFIG_VGA_AS_SINGLE_DEVICE
 #define CONFIG_VIDEO_LOGO
 #define CONFIG_VIDEO_BMP_LOGO
-#endif
 #endif
 
 /* pass open firmware flat tree */
