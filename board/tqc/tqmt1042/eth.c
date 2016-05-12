@@ -120,6 +120,7 @@ int board_eth_init(bd_t *bis)
 
 		switch (fm_info_get_enet_if(i)) {
 		case PHY_INTERFACE_MODE_SGMII:
+                        printf("Eth:   configuring FM1_DTSEC%i as SGMII\n", i+1);
                         if (FM1_DTSEC1 == i)
                                 phy_addr = CONFIG_SYS_SGMII1_PHY_ADDR;
                         if (FM1_DTSEC2 == i)
@@ -131,6 +132,7 @@ int board_eth_init(bd_t *bis)
 			fm_info_set_phy_address(i, phy_addr);
 			break;
 		case PHY_INTERFACE_MODE_RGMII:
+			printf("Eth:   configuring FM1_DTSEC%i as RGMII\n", i+1);
 			if (FM1_DTSEC4 == i)
 				phy_addr = CONFIG_SYS_RGMII1_PHY_ADDR;
 			if (FM1_DTSEC5 == i)
