@@ -575,6 +575,9 @@
 #define CONFIG_SYS_PBSIZE (CONFIG_SYS_CBSIZE+sizeof(CONFIG_SYS_PROMPT)+16)
 #define CONFIG_SYS_MAXARGS	16		/* max number of command args */
 #define CONFIG_SYS_BARGSIZE	CONFIG_SYS_CBSIZE/* Boot Argument Buffer Size */
+#define CONFIG_SYS_TQMT1042_PLL1_CLKGEN_AUTOREPROG		/* automatic reprogramming of 849N202 clock generator based on RCW */
+#define CONFIG_SYS_849N202_I2C_BUSNR 0x1	/* I2C bus number where 849N202's is located */
+#define CONFIG_SYS_849N202_CLKGEN_ADDR 0x6C	/* 849N202's I2C address */
 
 /*
  * For booting Linux, the board info and command line data
@@ -600,6 +603,20 @@
 #define MTDPARTS_DEFAULT	"mtdparts=fe8000000.nor:1m(uboot),5m(kernel)," \
 				"128k(dtb),96m(fs),-(user);"
 #endif
+
+/*
+ * Enable PCA953x I2C GPIO expander access
+ */
+#define CONFIG_PCA953X
+#define CONFIG_CMD_PCA953X
+#define CONFIG_CMD_PCA953X_INFO
+
+/*
+ * Reset pin for 88E1340 ethernet phy
+ * provided by PCA953x I2C GPIO expander
+ */
+#define CONFIG_SYS_88E1340_RST_I2C_PCA953X_ADDR	0x20
+#define CONFIG_SYS_88E1340_RST_I2C_PCA953X_GPIO	0x7
 
 /*
  * Environment Configuration

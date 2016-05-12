@@ -19,6 +19,9 @@
 #include <fm_eth.h>
 #include "sleep.h"
 #include "tqmt1042.h"
+#include <i2c.h>
+#include <asm/io.h>
+#include <pca953x.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -27,6 +30,139 @@ int checkboard(void)
 	struct cpu_type *cpu = gd->arch.cpu;
 
 	printf("Board: TQM%s\n", cpu->name);
+
+	return 0;
+}
+
+typedef struct _stktxxxx_849n202_clkgen_config {
+	int	reg;
+	uchar	val;
+} STKTxxxx_849N202_CLKGEN_CONFIG;
+
+static STKTxxxx_849N202_CLKGEN_CONFIG stktxxxx_849n202_clkgen_125mhz_configtbl[] = {
+	{0x00, 0x00},
+	{0x01, 0x00},
+	{0x02, 0x00},
+	{0x03, 0x00},
+	{0x04, 0x14},
+	{0x05, 0x14},
+	{0x06, 0x00},
+	{0x07, 0x00},
+	{0x08, 0x7d},
+	{0x09, 0x00},
+	{0x0a, 0x08},
+	{0x0b, 0x00},
+	{0x0c, 0xdc},
+	{0x0d, 0x00},
+	{0x0e, 0x00},
+	{0x0f, 0x01},
+	{0x10, 0x20},
+	{0x11, 0x90},
+	{0x12, 0xd7},
+	{0x13, 0xd4},
+	{0x14, 0x5c},
+	{0x15, 0x08},
+	{0x16, 0xa0},
+	{0x17, 0x00},
+	{-1, 0},
+};
+
+static int stktxxxx_849n202_clkgen_write_reg(int reg, uchar buf)
+{
+	if (i2c_write(CONFIG_SYS_849N202_CLKGEN_ADDR, reg, 1, &buf, 1) != 0) {
+		puts ("Error writing the chip.\n");
+		return 1;
+	}
+	return 0;
+}
+
+static int port_exp_direction_output(int i2c_busnr, int port_exp_i2c_ad, int gpio_nr, int value)
+{
+	int ret;
+	int oldbus = i2c_get_bus_num();
+
+	i2c_set_bus_num(i2c_busnr);
+	ret = i2c_probe(port_exp_i2c_ad);
+	if (ret)
+		return ret;
+
+	/* set direction to output */
+	ret = pca953x_set_dir(port_exp_i2c_ad,
+				(1 << gpio_nr),
+				(PCA953X_DIR_OUT << gpio_nr));
+	if (ret)
+		return ret;
+
+	/* set value */
+	ret = pca953x_set_val(port_exp_i2c_ad,
+		(1 << gpio_nr),
+		(value << gpio_nr));
+	if (ret)
+		return ret;
+
+	i2c_set_bus_num(oldbus);
+
+	return 0;
+}
+
+static int clkgen_849n202_125mhz_init(void)
+{
+	int oldbus = i2c_get_bus_num();
+	int i = 0;
+	int ret;
+	u32 pll_num, pll_status, pll_rstctl;
+	serdes_corenet_t  __iomem *srds_regs = (void *)CONFIG_SYS_FSL_CORENET_SERDES_ADDR;
+
+	/* set 849n202 clock generator to output 125 MHz */
+
+	printf("reprogramming 849n202 clock generator to 125 MHz\n");
+	i2c_set_bus_num(1);
+	while (stktxxxx_849n202_clkgen_125mhz_configtbl[i].reg != -1) {
+		debug("write reg 0x%02x\n", i);
+		ret = stktxxxx_849n202_clkgen_write_reg(stktxxxx_849n202_clkgen_125mhz_configtbl[i].reg,
+			stktxxxx_849n202_clkgen_125mhz_configtbl[i].val);
+		if (ret != 0)
+			return -1;
+		i++;
+	}
+	i2c_set_bus_num(oldbus);
+
+	/* reset CPU-internal PLL1 block */
+
+	printf("resetting CPU-internal PLL1 block\n");
+	pll_num = 0;
+	/* debug */
+	pll_status = in_be32(&srds_regs->bank[pll_num].pllcr0);
+	debug("TQMT1042_PLL_RESET: pll_num=%x pllcr0=%x\n",
+			pll_num, pll_status);
+	/* Write PLL Reset Control Register, RSTREQ bit to reset PLL */
+	/* Write SRDS_PLLnRSTCTL[0] = 1 (write 1, self-clearing) */
+	pll_rstctl = in_be32(&srds_regs->bank[pll_num].rstctl);
+	out_be32(&srds_regs->bank[pll_num].rstctl,
+		 (pll_rstctl |= SRDS_RSTCTL_RST));
+	debug("TQMT1042_PLL_RESET: pll_num=%x Updated PLLRSTCTL=%x\n",
+	      pll_num, (pll_rstctl |= SRDS_RSTCTL_RST));
+	/* Wait 750us to verify the PLL is locked */
+	/* by checking SRDSxPLLnCR0[8] = 1. */
+	udelay(750);
+	pll_status = in_be32(&srds_regs->bank[pll_num].pllcr0);
+	debug("TQMT1042_PLL_RESET: pll_num=%x pllcr0=%x\n",
+			pll_num, pll_status);
+	if ((pll_status & SRDS_PLLCR0_PLL_LCK) == 0)
+		printf("TQMT1042_PLL_RESET: Serdes PLL not locked\n");
+	else
+		debug("TQMT1042_PLL_RESET: Serdes PLL locked\n");
+
+	/* reset 88E1340 ethernet phy via gpio */
+
+	printf("resetting 88E1340 ethernet phy\n");
+	/* set 88E1340_RST signal to 0 */
+	ret = port_exp_direction_output(CONFIG_SYS_849N202_I2C_BUSNR, \
+			CONFIG_SYS_88E1340_RST_I2C_PCA953X_ADDR, CONFIG_SYS_88E1340_RST_I2C_PCA953X_GPIO, 0);
+	udelay(1000);
+	/* set 88E1340_RST signal to 1 */
+	ret = port_exp_direction_output(CONFIG_SYS_849N202_I2C_BUSNR, \
+			CONFIG_SYS_88E1340_RST_I2C_PCA953X_ADDR, CONFIG_SYS_88E1340_RST_I2C_PCA953X_GPIO, 1);
 
 	return 0;
 }
@@ -46,6 +182,9 @@ int board_early_init_r(void)
 #ifdef CONFIG_SYS_FLASH_BASE
 	const unsigned int flashbase = CONFIG_SYS_FLASH_BASE;
 	int flash_esel = find_tlb_idx((void *)flashbase, 1);
+	u32 srds_pll_ref_clk_sel_s1;
+	ccsr_gur_t *gur = (void *)(CONFIG_SYS_MPC85xx_GUTS_ADDR);
+	int ret;
 
 	/*
 	 * Remap Boot flash region to caching-inhibited
@@ -72,6 +211,28 @@ int board_early_init_r(void)
 	set_liodns();
 #ifdef CONFIG_SYS_DPAA_QBMAN
 	setup_portals();
+#endif
+
+#ifdef CONFIG_SYS_TQMT1042_PLL1_CLKGEN_AUTOREPROG
+	/* read RCW SRDS_PLL_REF_CLK_SEL_S1, to detemine which PLL1 reference clock frequency is required */
+	srds_pll_ref_clk_sel_s1 = in_be32(&gur->rcwsr[5]) &
+			FSL_CORENET2_RCWSR5_SRDS_PLL_REF_CLK_SEL_S1_PLL1;
+	srds_pll_ref_clk_sel_s1 >>= FSL_CORENET2_RCWSR5_SRDS_PLL_REF_CLK_SEL_S1_PLL1_SHIFT;
+
+	switch (srds_pll_ref_clk_sel_s1) {
+		/* SRDS_PLL_REF_CLK_SEL_S1 set to 125 MHz
+		 * reprogram clock generator, reset PLL, reset 88E1340 ethernet phy */
+		case 0x1:
+			printf("SRDS_PLL_REF_CLK_SEL_S1 = 1 (125MHz) detected in RCW\n");
+			ret = clkgen_849n202_125mhz_init();
+			if (ret != 0)
+				printf("error on reconfiguring serdes pll1 to 125 MHz\n");
+			break;
+		/* SRDS_PLL_REF_CLK_SEL_S1 set to 100 MHz, no action required */
+		case 0x0:
+		default:
+			break;
+	}
 #endif
 
 	return 0;
