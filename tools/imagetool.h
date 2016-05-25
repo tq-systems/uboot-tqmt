@@ -186,6 +186,8 @@ int imagetool_save_subimage(
 
 void pbl_load_uboot(int fd, struct image_tool_params *mparams);
 
+void rcw_load_cfg_file(int fd, struct image_tool_params *mparams);
+
 #define ___cat(a, b) a ## b
 #define __cat(a, b) ___cat(a, b)
 

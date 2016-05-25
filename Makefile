@@ -740,6 +740,7 @@ ALL-$(CONFIG_RAMBOOT_PBL) += u-boot-with-spl-pbl.bin
 else
 ALL-$(CONFIG_RAMBOOT_PBL) += u-boot.pbl
 endif
+ALL-$(CONFIG_FSL_RCW_BIN) += fsl_rcw.bin
 ALL-$(CONFIG_SPL) += spl/u-boot-spl.bin
 ALL-$(CONFIG_SPL_FRAMEWORK) += u-boot.img
 ALL-$(CONFIG_TPL) += tpl/u-boot-tpl.bin
@@ -896,6 +897,11 @@ u-boot.img u-boot.kwb u-boot.pbl: u-boot.bin FORCE
 	$(call if_changed,mkimage)
 
 u-boot-spl.kwb: u-boot.img spl/u-boot-spl.bin FORCE
+	$(call if_changed,mkimage)
+
+MKIMAGEFLAGS_fsl_rcw.bin = -n $(srctree)/$(CONFIG_SYS_FSL_RCW:"%"=%) -T rcwimage
+
+fsl_rcw.bin: $(srctree)/$(CONFIG_SYS_FSL_RCW:"%"=%) FORCE
 	$(call if_changed,mkimage)
 
 MKIMAGEFLAGS_u-boot-dtb.img = $(MKIMAGEFLAGS_u-boot.img)

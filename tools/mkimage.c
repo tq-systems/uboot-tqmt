@@ -344,6 +344,9 @@ NXTARG:		;
 		} else if (params.type == IH_TYPE_PBLIMAGE) {
 			/* PBL has special Image format, implements its' own */
 			pbl_load_uboot(ifd, &params);
+		} else if (params.type == IH_TYPE_RCWIMAGE) {
+			/* RCW has special Image format, implements its' own */
+			rcw_load_cfg_file(ifd, &params);
 		} else {
 			copy_file(ifd, params.datafile, pad_len);
 		}

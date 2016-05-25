@@ -245,6 +245,7 @@ struct lmb;
 #define IH_TYPE_X86_SETUP	20	/* x86 setup.bin Image		*/
 #define IH_TYPE_LPC32XXIMAGE	21	/* x86 setup.bin Image		*/
 #define IH_TYPE_LOADABLE	22	/* A list of typeless images	*/
+#define IH_TYPE_RCWIMAGE	23	/* Freescale RCW binary image   */
 
 /*
  * Compression Types
