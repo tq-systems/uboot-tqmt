@@ -61,6 +61,9 @@
 #endif
 #define CONFIG_SPL_MMC_BOOT
 #endif
+#else
+#define CONFIG_FSL_RCW_BIN
+#define CONFIG_SYS_FSL_RCW $(SRCTREE)/board/tqc/tqmt1042/tqmt1042_rcw.cfg
 #endif
 
 /* High Level Configuration Options */
