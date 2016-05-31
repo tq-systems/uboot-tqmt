@@ -159,7 +159,7 @@ static int clkgen_849n202_125mhz_init(void)
 	/* set 88E1340_RST signal to 0 */
 	ret = port_exp_direction_output(CONFIG_SYS_849N202_I2C_BUSNR, \
 			CONFIG_SYS_88E1340_RST_I2C_PCA953X_ADDR, CONFIG_SYS_88E1340_RST_I2C_PCA953X_GPIO, 0);
-	udelay(1000);
+	udelay(10000);
 	/* set 88E1340_RST signal to 1 */
 	ret = port_exp_direction_output(CONFIG_SYS_849N202_I2C_BUSNR, \
 			CONFIG_SYS_88E1340_RST_I2C_PCA953X_ADDR, CONFIG_SYS_88E1340_RST_I2C_PCA953X_GPIO, 1);
