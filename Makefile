@@ -901,7 +901,7 @@ u-boot-spl.kwb: u-boot.img spl/u-boot-spl.bin FORCE
 
 MKIMAGEFLAGS_fsl_rcw.bin = -n $(srctree)/$(CONFIG_SYS_FSL_RCW:"%"=%) -T rcwimage
 
-fsl_rcw.bin: $(srctree)/$(CONFIG_SYS_FSL_RCW:"%"=%) FORCE
+fsl_rcw.bin: tools $(srctree)/$(CONFIG_SYS_FSL_RCW:"%"=%) FORCE
 	$(call if_changed,mkimage)
 
 MKIMAGEFLAGS_u-boot-dtb.img = $(MKIMAGEFLAGS_u-boot.img)
