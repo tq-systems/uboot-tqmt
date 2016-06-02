@@ -9,4 +9,26 @@ config SYS_VENDOR
 config SYS_CONFIG_NAME
 	default "TQMT1042"
 
+choice
+	prompt "TQMT1042 RCW configuration file"
+	default TQMT1042_RCW_CFG_SERDES86
+	help
+	  select the RCW configuration file to be used for TQMT1042
+
+config TQMT1042_RCW_CFG_SERDES86
+	bool "RCW configuration for SERDES mode = 86, default RCW configuration"
+	help
+	  Select SERDES mode = 86 in reset configuration word.
+
+config TQMT1042_RCW_CFG_SERDES88
+	bool "RCW configuration for SERDES mode = 88"
+	help
+	  Select SERDES mode = 88 in reset configuration word.
+
+endchoice
+
+config SYS_FSL_RCW
+	string
+	default "board/tqc/tqmt1042/tqmt1042_serdes86_rcw.cfg" if TQMT1042_RCW_CFG_SERDES86
+	default "board/tqc/tqmt1042/tqmt1042_serdes88_rcw.cfg" if TQMT1042_RCW_CFG_SERDES88
 endif

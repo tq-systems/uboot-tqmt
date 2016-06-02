@@ -7,6 +7,9 @@
 #ifndef __CONFIG_H
 #define __CONFIG_H
 
+
+#include <linux/kconfig.h>
+
 #undef DEBUG
 /*
  * TQMT1042 board configuration file
@@ -22,7 +25,7 @@
 
 #ifdef CONFIG_RAMBOOT_PBL
 #define CONFIG_SYS_FSL_PBL_PBI $(SRCTREE)/board/tqc/tqmt1042/tqmt1042_pbi.cfg
-#define CONFIG_SYS_FSL_PBL_RCW $(SRCTREE)/board/tqc/tqmt1042/tqmt1042_rcw.cfg
+#define CONFIG_SYS_FSL_PBL_RCW CONFIG_SYS_FSL_RCW /* use same configuration for RAMBOOT and NOR boot */
 
 #define CONFIG_SPL_MPC8XXX_INIT_DDR_SUPPORT
 #define CONFIG_SPL_ENV_SUPPORT
@@ -63,7 +66,11 @@
 #endif
 #else
 #define CONFIG_FSL_RCW_BIN
-#define CONFIG_SYS_FSL_RCW $(SRCTREE)/board/tqc/tqmt1042/tqmt1042_rcw.cfg
+
+#ifndef CONFIG_SYS_FSL_RCW
+#error "RCW configuration file not selected (CONFIG_SYS_FSL_RCW not defined)!!!"
+#endif
+
 #endif
 
 /* High Level Configuration Options */
