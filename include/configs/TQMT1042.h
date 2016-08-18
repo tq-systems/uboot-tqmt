@@ -580,7 +580,7 @@
 #ifdef CONFIG_CMD_KGDB
 #define CONFIG_SYS_CBSIZE	1024		/* Console I/O Buffer Size */
 #else
-#define CONFIG_SYS_CBSIZE	256		/* Console I/O Buffer Size */
+#define CONFIG_SYS_CBSIZE	1024		/* Console I/O Buffer Size */
 #endif
 #define CONFIG_SYS_PBSIZE (CONFIG_SYS_CBSIZE+sizeof(CONFIG_SYS_PROMPT)+16)
 #define CONFIG_SYS_MAXARGS	16		/* max number of command args */
