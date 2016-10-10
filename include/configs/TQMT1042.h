@@ -717,7 +717,20 @@
 	"nfs $fdtaddr $serverip:$rootpath/$fdtfile; "		\
 	"bootm $loadaddr - $fdtaddr"
 
+#define CONFIG_SDCARDBOOTCOMMAND \
+	"setenv bootargs root=/dev/mmcblk0p2 rw rootwait " \
+	"ip=$ipaddr:$serverip:$gatewayip:$netmask:$hostname:$netdev:off " \
+	"console=$consoledev,$baudrate $othbootargs; "		\
+	"fatload mmc 0:1 $loadaddr uImage; " \
+	"fatload mmc 0:1 $fdtaddr tqmt1042.dtb; " \
+	"bootm $loadaddr - $fdtaddr"
+
+
+#ifdef CONFIG_SDCARD
+#define CONFIG_BOOTCOMMAND		CONFIG_SDCARDBOOTCOMMAND
+#else
 #define CONFIG_BOOTCOMMAND		CONFIG_HDBOOT
+#endif
 
 #ifdef CONFIG_SECURE_BOOT
 #include <asm/fsl_secure_boot.h>
