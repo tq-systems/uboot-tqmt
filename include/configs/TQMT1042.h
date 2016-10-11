@@ -717,6 +717,13 @@
 	"nfs $fdtaddr $serverip:$rootpath/$fdtfile; "		\
 	"bootm $loadaddr - $fdtaddr"
 
+#define CONFIG_NORBOOTCOMMAND \
+	"setenv bootargs root=/dev/mtdblock3 rootfstype=jffs2 rootwait rw " \
+	"ip=$ipaddr:$serverip:$gatewayip:$netmask:$hostname:$netdev:off " \
+	"console=$consoledev,$baudrate $othbootargs; " \
+	"bootm 0xe8020000 - 0xe8820000"
+
+
 #define CONFIG_SDCARDBOOTCOMMAND \
 	"setenv bootargs root=/dev/mmcblk0p2 rw rootwait " \
 	"ip=$ipaddr:$serverip:$gatewayip:$netmask:$hostname:$netdev:off " \
@@ -729,7 +736,7 @@
 #ifdef CONFIG_SDCARD
 #define CONFIG_BOOTCOMMAND		CONFIG_SDCARDBOOTCOMMAND
 #else
-#define CONFIG_BOOTCOMMAND		CONFIG_HDBOOT
+#define CONFIG_BOOTCOMMAND		CONFIG_NORBOOTCOMMAND
 #endif
 
 #ifdef CONFIG_SECURE_BOOT
