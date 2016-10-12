@@ -214,7 +214,8 @@ int board_early_init_r(void)
 #endif
 
 #ifdef CONFIG_SYS_TQMT1042_PLL1_CLKGEN_AUTOREPROG
-	/* read RCW SRDS_PLL_REF_CLK_SEL_S1, to detemine which PLL1 reference clock frequency is required */
+	/* read RCW SRDS_PLL_REF_CLK_SEL_S1
+	 * to detemine which PLL1 reference clock frequency is required */
 	srds_pll_ref_clk_sel_s1 = in_be32(&gur->rcwsr[5]) &
 			FSL_CORENET2_RCWSR5_SRDS_PLL_REF_CLK_SEL_S1_PLL1;
 	srds_pll_ref_clk_sel_s1 >>= FSL_CORENET2_RCWSR5_SRDS_PLL_REF_CLK_SEL_S1_PLL1_SHIFT;
