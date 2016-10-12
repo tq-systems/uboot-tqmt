@@ -25,10 +25,16 @@ config RCW_CFG_TQMT1042_SERDES88
 	help
 	  Select SERDES mode = 88 in reset configuration word.
 
+config RCW_CFG_TQMT1042_SERDES8E
+	bool "RCW configuration for SERDES mode = 8E"
+	help
+	  Select SERDES mode = 8E in reset configuration word.
+
 endchoice
 
 config SYS_FSL_RCW
 	string
 	default "board/tqc/tqmt1042/tqmt1042_serdes86_rcw.cfg" if RCW_CFG_TQMT1042_SERDES86
 	default "board/tqc/tqmt1042/tqmt1042_serdes88_rcw.cfg" if RCW_CFG_TQMT1042_SERDES88
+	default "board/tqc/tqmt1042/tqmt1042_serdes8e_rcw.cfg" if RCW_CFG_TQMT1042_SERDES8E
 endif
