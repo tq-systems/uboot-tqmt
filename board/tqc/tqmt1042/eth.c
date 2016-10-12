@@ -14,6 +14,8 @@
 #include <asm/fsl_dtsec.h>
 #include <phy.h>
 
+static int eth_phy_qsgmii_reprogram = 0;
+
 /*
  * Set RGMII delay values in ethernet phys
  * located on the STKT104x starterkit
@@ -93,6 +95,13 @@ int board_phy_config(struct phy_device *phydev)
 		phy_write(phydev,MDIO_DEVAD_NONE,0x1d,0x0000);
 	}
 
+	if ((phydev->addr == CONFIG_SYS_QSGMII1_PHY_ADDR) && (eth_phy_qsgmii_reprogram == 1)) {
+		printf("Eth:   reprogramming 88E1340 ethernet phy to QSGMII\n");
+                phy_write(phydev,MDIO_DEVAD_NONE,MII_88E1340_PAGEAD,0x06);
+                phy_write(phydev,MDIO_DEVAD_NONE,0x14,0x8200);
+                phy_write(phydev,MDIO_DEVAD_NONE,MII_88E1340_PAGEAD,0x00);
+	}
+
 	return 0;
 }
 
@@ -140,8 +149,15 @@ int board_eth_init(bd_t *bis)
 			fm_info_set_phy_address(i, phy_addr);
 			break;
 		case PHY_INTERFACE_MODE_QSGMII:
-			/* QSGMII unsupported on T1042 */
-			fm_info_set_phy_address(i, 0);
+			/* QSGMII unsupported on T1042, supported on T1040
+			 * TODO: QSGMII currently errorous on hardware
+			 * implement after hardware has been fixed
+			 * only automatic reprogramming of the phy
+			 * from SGMII to QSGII
+			 * has been implemented so far */
+			printf("Eth:   configuring FM1_DTSEC%i as QSGMII\n", i+1);
+			eth_phy_qsgmii_reprogram = 1;
+			fm_info_set_phy_address(i, phy_addr);
 			break;
 		case PHY_INTERFACE_MODE_NONE:
 			fm_info_set_phy_address(i, 0);
