@@ -17,8 +17,8 @@
 static int eth_phy_qsgmii_reprogram = 0;
 
 /*
- * Set RGMII delay values in ethernet phys
- * located on the STKT104x starterkit
+ * Set RGMII delay and other values in ethernet phys
+ * located on the STKTxxxx starterkit
  */
 int board_phy_config(struct phy_device *phydev)
 {
