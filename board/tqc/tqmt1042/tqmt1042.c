@@ -241,6 +241,17 @@ int board_early_init_r(void)
 
 int misc_init_r(void)
 {
+/* MAC GTX Clock provided by EC2_GTX_CLK125
+ * As in some STKTxxxx SerDes configurations EC1 is inactive,
+ * GTX clock is always provided by EC2
+ */
+#ifdef CONFIG_SYS_TQMT1042_SCFG_EMIIOCR_EC2_GTX_CLK125
+        u32 emiiocr;
+        struct ccsr_scfg __iomem *scfg = (void *)CONFIG_SYS_MPC85xx_SCFG;
+
+        emiiocr = (in_be32(&scfg->emiiocr));
+        out_be32(&scfg->emiiocr, emiiocr |= 0x08000000);
+#endif
 	return 0;
 }
 
