@@ -585,7 +585,8 @@
 #define CONFIG_SYS_PBSIZE (CONFIG_SYS_CBSIZE+sizeof(CONFIG_SYS_PROMPT)+16)
 #define CONFIG_SYS_MAXARGS	16		/* max number of command args */
 #define CONFIG_SYS_BARGSIZE	CONFIG_SYS_CBSIZE/* Boot Argument Buffer Size */
-#define CONFIG_SYS_TQMT1042_PLL1_CLKGEN_AUTOREPROG		/* automatic reprogramming of 849N202 clock generator based on RCW */
+/* automatic reprogramming of 849N202 clock generator based on RCW */
+#define CONFIG_SYS_TQMT1042_PLL1_CLKGEN_AUTOREPROG
 #define CONFIG_SYS_849N202_I2C_BUSNR 0x1	/* I2C bus number where 849N202's is located */
 #define CONFIG_SYS_849N202_CLKGEN_ADDR 0x6C	/* 849N202's I2C address */
 /* MAC GTX Clock provided by EC2_GTX_CLK125 */
