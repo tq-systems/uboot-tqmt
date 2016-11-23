@@ -11,7 +11,7 @@
 #include <linux/ctype.h>
 #include <video_fb.h>
 
-#include "tqmt1042.h"
+#include "tqmt104x.h"
 
 /*
  * DIU Area Descriptor

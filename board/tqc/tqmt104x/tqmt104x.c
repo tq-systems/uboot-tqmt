@@ -18,7 +18,7 @@
 #include <asm/fsl_liodn.h>
 #include <fm_eth.h>
 #include "sleep.h"
-#include "tqmt1042.h"
+#include "tqmt104x.h"
 #include <i2c.h>
 #include <asm/io.h>
 #include <pca953x.h>
