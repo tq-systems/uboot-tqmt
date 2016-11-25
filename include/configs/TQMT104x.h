@@ -636,7 +636,8 @@
  * Environment Configuration
  */
 #define CONFIG_ROOTPATH		"/srv/nfs/rootfs-64b"
-#define CONFIG_BOOTFILE		"boot/uImage_tqmt1042"					/* uImage on NFS server*/
+/* CONFIG_BOOTFILE moved to TQMT1040.h resp. TQMT1042.h*/
+
 #define CONFIG_UBOOTPATH	"u-boot/u-boot_tqmt1042.bin"	/* U-Boot image on TFTP server*/
 
 /* default location for tftp and bootm */
@@ -648,7 +649,7 @@
 
 #define __USB_PHY_TYPE	utmi
 #define RAMDISKFILE	"uboot/ramdisk.ext2.gz.u-boot"
-#define FDTFILE		"boot/tqmt1042.dtb"
+/* FDTFILE moved to TQMT1040.h resp. TQMT1042.h*/
 
 #ifdef CONFIG_FSL_DIU_FB
 #define DIU_ENVIRONMENT "video-mode=fslfb:1024x768-24@60"

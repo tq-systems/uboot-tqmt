@@ -12,6 +12,13 @@
 #define CONFIG_VSC9953_CMD
 #define CONFIG_SYS_FM1_QSGMII11_PHY_ADDR             0x1C
 
+/* name and path of kernel image and device tree
+ * set in default environment
+ * for nfs boot and sd card boot
+ */
+#define CONFIG_BOOTFILE "boot/uImage-tqmt1040-64b-stk.bin"
+#define FDTFILE         "boot/uImage-tqmt1040.dtb"
+
 #include <configs/TQMT104x.h>
 
 #endif	/* __CONFIG_TQMT1040_H */
