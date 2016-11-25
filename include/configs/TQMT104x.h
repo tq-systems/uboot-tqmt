@@ -733,8 +733,8 @@
 	"setenv bootargs root=/dev/mmcblk0p2 rw rootwait " \
 	"ip=$ipaddr:$serverip:$gatewayip:$netmask:$hostname:$netdev:off " \
 	"console=$consoledev,$baudrate $othbootargs; "		\
-	"fatload mmc 0:1 $loadaddr $bootfile " \
-	"fatload mmc 0:1 $fdtaddr &fdtfile " \
+	"fatload mmc 0:1 $loadaddr $bootfile; " \
+	"fatload mmc 0:1 $fdtaddr $fdtfile; " \
 	"bootm $loadaddr - $fdtaddr"
 
 
