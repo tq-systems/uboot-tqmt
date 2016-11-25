@@ -7,6 +7,11 @@
 #ifndef __CONFIG_TQMT1040_H
 #define __CONFIG_TQMT1040_H
 
+/* Enable VSC9953 L2 Switch driver on T1040 SoC */
+#define CONFIG_VSC9953
+#define CONFIG_VSC9953_CMD
+#define CONFIG_SYS_FM1_QSGMII11_PHY_ADDR             0x1C
+
 #include <configs/TQMT104x.h>
 
 #endif	/* __CONFIG_TQMT1040_H */
