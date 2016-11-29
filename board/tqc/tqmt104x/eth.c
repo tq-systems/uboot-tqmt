@@ -14,8 +14,64 @@
 #include <asm/fsl_dtsec.h>
 #include <phy.h>
 #include <vsc9953.h>
+#include <i2c.h>
+#include <hwconfig.h>
+
+#define CONFIG_SYS_MODULE_EEPROM         	0x57
+#define CONFIG_SYS_MODULE_EEPROM_ADLEN          0x2
+#define CONFIG_SYS_MODULE_EEPROM_MAC_AD_OFFSET  0x0
 
 static int eth_phy_qsgmii_reprogram = 0;
+
+static int _tq_get_macaddress_from_eeprom(void) {
+
+	int err;
+	int i,j;
+	uint8_t ethAddrBuf[6];
+	char ethAddrStr[18]; /* xx:xx:xx:xx:xx:xx\0 */
+	const char *varname;
+	unsigned int oldI2cBus;
+
+	/* Read MAC address from EEPROM */
+	oldI2cBus = i2c_get_bus_num();
+	i2c_set_bus_num(0);
+	err = i2c_read(CONFIG_SYS_MODULE_EEPROM, CONFIG_SYS_MODULE_EEPROM_MAC_AD_OFFSET, \
+			CONFIG_SYS_MODULE_EEPROM_ADLEN, ethAddrBuf, sizeof(ethAddrBuf));
+	i2c_set_bus_num(oldI2cBus);
+
+	if(err) {
+		printf("Could not read MAC addresses: %d\n", err);
+		return err;
+	} else {
+		for(i = 0; i < 5; i++) {
+			if(i == 0) {
+				varname = "ethaddr";
+			} else if(i == 1) {
+				varname = "eth1addr";
+			} else if(i == 2) {
+				varname = "eth2addr";
+			} else if(i == 3) {
+				varname = "eth3addr";
+			} else if(i == 4) {
+				varname = "eth4addr";
+			}
+			sprintf(
+				ethAddrStr, "%02x:%02x:%02x:%02x:%02x:%02x",
+				ethAddrBuf[0], ethAddrBuf[1], ethAddrBuf[2],
+				ethAddrBuf[3], ethAddrBuf[4], ethAddrBuf[5]
+			);
+			setenv(varname, ethAddrStr);
+
+			/* Increment MAC address by 1 with overflow. */
+			j = sizeof(ethAddrBuf);
+			do {
+				j--;
+				ethAddrBuf[j]++;
+			} while(ethAddrBuf[j] == 0 && j > 0);
+		}
+	}
+	return 0;
+}
 
 /*
  * Set RGMII delay and other values in ethernet phys
@@ -214,6 +270,9 @@ int board_eth_init(bd_t *bis)
                 vsc9953_port_enable(9);
         }
 #endif
+
+        /* get MAC addresses from I2C EEPROM */
+        _tq_get_macaddress_from_eeprom();
 
 	cpu_eth_init(bis);
 #endif
