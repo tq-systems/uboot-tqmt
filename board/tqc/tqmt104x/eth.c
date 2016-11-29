@@ -87,6 +87,7 @@ int board_phy_config(struct phy_device *phydev)
 #define MII_DP83867_RGMIIDCTL         0x0086
 #define MII_DP83867_BYTEORDER         0x00DC
 #define MII_88E1340_PAGEAD            0x0016
+#define MII_DP83867_IOMUXCFG          0x0170
 
 	if (phydev->drv->config)
 		phydev->drv->config(phydev);
@@ -106,6 +107,12 @@ int board_phy_config(struct phy_device *phydev)
 	}
 
 	if (phydev->addr == CONFIG_SYS_RGMII2_PHY_ADDR) {
+		/* set EC2 RGMII phy to output 125MHz on CLK_OUT pin (required for MAC) */
+		phy_write(phydev,MDIO_DEVAD_NONE,MII_DP83867_REGCR,MII_DP83867_REGCR_AD);
+		phy_write(phydev,MDIO_DEVAD_NONE,MII_DP83867_ADDAR,MII_DP83867_IOMUXCFG);
+		phy_write(phydev,MDIO_DEVAD_NONE,MII_DP83867_REGCR,MII_DP83867_REGCR_DAT);
+		phy_write(phydev,MDIO_DEVAD_NONE,MII_DP83867_ADDAR,0x000D);
+
 		/* set EC2 RGMII delay (extended write) */
 		phy_write(phydev,MDIO_DEVAD_NONE,MII_DP83867_REGCR,MII_DP83867_REGCR_AD);
 		phy_write(phydev,MDIO_DEVAD_NONE,MII_DP83867_ADDAR,MII_DP83867_RGMIIDCTL);
