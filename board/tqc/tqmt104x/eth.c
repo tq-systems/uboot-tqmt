@@ -18,7 +18,7 @@
 #include <hwconfig.h>
 
 #define CONFIG_SYS_MODULE_EEPROM         	0x50
-#define CONFIG_SYS_MODULE_EEPROM_ADLEN          0x2
+#define CONFIG_SYS_MODULE_EEPROM_ADLEN          0x1
 #define CONFIG_SYS_MODULE_EEPROM_MAC_AD_OFFSET  0x20
 
 static int eth_phy_qsgmii_reprogram = 0;
