@@ -25,11 +25,10 @@ struct board_specific_parameters {
 static const struct board_specific_parameters udimm0[] = {
 	/*
 	 * memory controller 0
-	 *   num|  hi| rank|  clk| wrlvl |   wrlvl
-	 * ranks| mhz| GB  |adjst| start |   ctl2
+	 *   num|    hi| rank|  clk| wrlvl |     wrlvl | wrlv
+	 * ranks|   mhz| GB  |adjst| start |      ctl2 | ctl3
 	 */
-/* TODO: fix board specific write leveling values (have to be found by experiments) */
-	{1,  1666, 0, 4,     7, 0x00000000, 0x00000000},
+	{      1,  1666,    0,    4,      7, 0x00000000, 0x00000000},
 	{}
 };
 
