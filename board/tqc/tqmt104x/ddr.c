@@ -9,7 +9,9 @@
 #include <hwconfig.h>
 #include <asm/mmu.h>
 #include <fsl_ddr_sdram.h>
+#ifdef CONFIG_SYS_DDR_RAW_TIMING
 #include <fsl_ddr_dimm_params.h>
+#endif
 #include <asm/fsl_law.h>
 #include <asm/mpc85xx_gpio.h>
 #include "ddr.h"
@@ -74,7 +76,6 @@ int fsl_ddr_get_dimm_params(dimm_params_t *pdimm,
 
         return 0;
 }
-#endif /* CONFIG_SYS_DDR_RAW_TIMING */
 
 void fsl_ddr_board_options(memctl_options_t *popts,
 				dimm_params_t *pdimm,
@@ -154,6 +155,102 @@ found:
 	popts->ddr_cdr2 = DDR_CDR2_ODT(DDR_CDR_ODT_75ohm);
 }
 
+/* use fixed timing if CONFIG_SYS_DDR_RAW_TIMING is not defined */
+#else /* CONFIG_SYS_DDR_RAW_TIMING */
+/*
+ * Fixed sdram init -- doesn't use serial presence detect.
+ */
+phys_size_t fixed_sdram(void)
+{
+        struct ccsr_ddr *ddr = (struct ccsr_ddr *)CONFIG_SYS_FSL_DDR_ADDR;
+        u32 temp_sdram_cfg;
+        u32 total_gb_size_per_controller;
+        unsigned int bus_width;
+        int timeout;
+        size_t ddr_size;
+
+        out_be32(&ddr->sdram_cfg, DDR_SDRAM_CFG);
+
+        out_be32(&ddr->cs0_bnds, DDR_CS0_BNDS);
+        out_be32(&ddr->cs0_config, DDR_CS0_CONFIG);
+        out_be32(&ddr->cs0_config_2, DDR_CS0_CONFIG2);
+
+        out_be32(&ddr->timing_cfg_3, DDR_TIMING_CFG_3);
+        out_be32(&ddr->timing_cfg_0, DDR_TIMING_CFG_0);
+        out_be32(&ddr->timing_cfg_1, DDR_TIMING_CFG_1);
+        out_be32(&ddr->timing_cfg_2, DDR_TIMING_CFG_2);
+
+        out_be32(&ddr->sdram_mode, DDR_SDRAM_MODE);
+        out_be32(&ddr->sdram_mode_2, DDR_SDRAM_MODE_2);
+
+        out_be32(&ddr->sdram_md_cntl, DDR_SDRAM_MD_CNTL);
+        out_be32(&ddr->sdram_interval, DDR_SDRAM_INTERVAL);
+        out_be32(&ddr->sdram_data_init, DDR_DATA_INIT);
+        out_be32(&ddr->sdram_clk_cntl, DDR_SDRAM_CLK_CNTL);
+
+        out_be32(&ddr->timing_cfg_4, DDR_TIMING_CFG_4);
+        out_be32(&ddr->timing_cfg_5, DDR_TIMING_CFG_5);
+
+        out_be32(&ddr->ddr_zq_cntl, DDR_DDR_ZQ_CNTL);
+
+        out_be32(&ddr->ddr_wrlvl_cntl, DDR_DDR_WRLVL_CNTL);
+
+        out_be32(&ddr->ddr_wrlvl_cntl_2, DDR_DDR_WRLVL_CNTL_2);
+        out_be32(&ddr->ddr_wrlvl_cntl_3, DDR_DDR_WRLVL_CNTL_3);
+
+        out_be32(&ddr->ddr_sr_cntr, DDR_SR_CNTR);
+        out_be32(&ddr->ddr_sdram_rcw_1, DDR_SDRAM_RCW_1);
+        out_be32(&ddr->ddr_sdram_rcw_2,DDR_SDRAM_RCW_2);
+        out_be32(&ddr->ddr_cdr1, DDR_DDR_CDR1);
+        out_be32(&ddr->sdram_cfg_2,  DDR_SDRAM_CFG_2);
+        out_be32(&ddr->ddr_cdr2, DDR_DDR_CDR2);
+
+        udelay(500);
+        asm volatile("sync;isync");
+
+        temp_sdram_cfg = (in_be32(&ddr->sdram_cfg) & ~SDRAM_CFG_BI);
+        out_be32(&ddr->sdram_cfg, temp_sdram_cfg | DDR_SDRAM_CFG_MEM_EN);
+        asm volatile("sync;isync");
+
+        /* Size; no Interleaving! */
+        total_gb_size_per_controller = 1 << (
+                ((DDR_CS0_CONFIG >> 14) & 0x3) + 2 +    /* BA_BITS_CSn  */
+                ((DDR_CS0_CONFIG >> 8) & 0x7) + 12 +    /* ROW_BITS_CSn */
+                ((DDR_CS0_CONFIG >> 0) & 0x7) + 8 +     /* COL_BITS_CSn */
+                3 - ((DDR_SDRAM_CFG >> 19) & 0x3) -     /* 0 = 64bit, 1 = 32bit bus */
+                26);                    /* minus 26 (count of 64M) */
+
+        /*
+         * total memory / bus width = transactions needed
+         * transactions needed / data rate = seconds
+         * to add plenty of buffer, double the time
+         * For example, 2GB on 666MT/s 64-bit bus takes about 402ms
+         * Let's wait for 800ms
+         */
+        bus_width = 3 - ((ddr->sdram_cfg & SDRAM_CFG_DBW_MASK) >> SDRAM_CFG_DBW_SHIFT);
+        timeout = ((total_gb_size_per_controller << (6 - bus_width)) * 100 / (get_ddr_freq(0) >> 20)) << 1;
+
+        /* Poll DDR_SDRAM_CFG_2[D_INIT] bit until auto-data init is done.  */
+        while ((in_be32(&ddr->sdram_cfg_2) & SDRAM_CFG2_D_INIT) &&
+                (timeout >= 0)) {
+                udelay(10000);          /* throttle polling rate */
+                timeout--;
+        }
+
+        if (timeout <= 0)
+                printf("Waiting for D_INIT timeout. Memory may not work.\n");
+
+	ddr_size = (phys_size_t) CONFIG_SYS_SDRAM_SIZE * 1024 * 1024;
+
+        if (set_ddr_laws(CONFIG_SYS_DDR_SDRAM_BASE, ddr_size, LAW_TRGT_IF_DDR_1) < 0) {
+                printf("ERROR setting Local Access Windows for DDR\n");
+                return 0;
+        }
+
+        return ddr_size;
+}
+#endif /* CONFIG_SYS_DDR_RAW_TIMING */
+
 #if defined(CONFIG_DEEP_SLEEP)
 void board_mem_sleep_setup(void)
 {
@@ -168,16 +265,20 @@ phys_size_t initdram(int board_type)
 	phys_size_t dram_size;
 
 #if defined(CONFIG_SPL_BUILD) || !defined(CONFIG_RAMBOOT_PBL)
-	puts("Initializing....using SPD\n");
-
+#ifdef CONFIG_SYS_DDR_RAW_TIMING
+	puts("Initializing....using raw ddr timings\n");
 	dram_size = fsl_ddr_sdram();
+#else
+        puts("Initializing....using fixed ddr timings\n");
+        dram_size = fixed_sdram();
+#endif /* CONFIG_SYS_DDR_RAW_TIMING */
 
 	dram_size = setup_ddr_tlbs(dram_size / 0x100000);
 	dram_size *= 0x100000;
 
 #else
-	dram_size =  fsl_ddr_sdram_size();
-#endif
+	dram_size =  (phys_size_t) CONFIG_SYS_SDRAM_SIZE * 1024 * 1024;
+#endif /* CONFIG_SPL_BUILD || !CONFIG_RAMBOOT_PBL */
 
 #if defined(CONFIG_DEEP_SLEEP) && !defined(CONFIG_SPL_BUILD)
 	fsl_dp_resume();
