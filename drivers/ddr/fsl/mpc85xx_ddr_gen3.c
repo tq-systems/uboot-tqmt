@@ -42,6 +42,12 @@ void fsl_ddr_set_memctl_regs(const fsl_ddr_cfg_regs_t *regs,
 	u32 save1, save2;
 #endif
 
+#ifdef CONFIG_SYS_FSL_ERRATUM_A009942
+	ulong ddr_freq;
+	u32 tmp;
+	u32 CPOmin, CPOmax;
+#endif
+
 	switch (ctrl_num) {
 	case 0:
 		ddr = (void *)CONFIG_SYS_FSL_DDR_ADDR;
@@ -185,6 +191,59 @@ void fsl_ddr_set_memctl_regs(const fsl_ddr_cfg_regs_t *regs,
 	out_be32(&ddr->debug[21], 0x24000000);
 #endif /* CONFIG_SYS_FSL_ERRATUM_DDR_A003474 */
 
+#ifdef CONFIG_SYS_FSL_ERRATUM_A009942
+	ddr_freq = get_ddr_freq(ctrl_num) / 1000000;
+	tmp = in_be32(&ddr->debug[28]);
+	tmp &= 0xFF0FFF00L;
+	if (ddr_freq <= 1333)
+		tmp |= 0x0080006aL;
+	else if (ddr_freq <= 1600)
+		tmp |= 0x0070006fL;
+	else if (ddr_freq <= 1867)
+		tmp |= 0x00700076L;
+	else if (ddr_freq <= 2133)
+		tmp |= 0x0060007bL;
+	out_be32(&ddr->debug[28], tmp);
+
+	CPOmin = 0; CPOmax = 0;
+	tmp = in_be32(&ddr->debug[9]);   // CPO Lane 0/1
+	CPOmin = min((u32)CPOmin,(u32)(tmp & 0xFFFF0000L)>>16);
+	CPOmin = min((u32)CPOmin,(u32)(tmp & 0x0000FFFFL));
+	CPOmax = max((u32)CPOmax,(u32)(tmp & 0xFFFF0000L)>>16);
+	CPOmax = max((u32)CPOmax,(u32)(tmp & 0x0000FFFFL));
+	tmp = in_be32(&ddr->debug[10]);  // CPO Lane 2/3
+	CPOmin = min((u32)CPOmin,(u32)(tmp & 0xFFFF0000L)>>16);
+	CPOmin = min((u32)CPOmin,(u32)(tmp & 0x0000FFFFL));
+	CPOmax = max((u32)CPOmax,(u32)(tmp & 0xFFFF0000L)>>16);
+	CPOmax = max((u32)CPOmax,(u32)(tmp & 0x0000FFFFL));
+	tmp = in_be32(&ddr->debug[11]);  // CPO Lane 4/5
+	CPOmin = min((u32)CPOmin,(u32)(tmp & 0xFFFF0000L)>>16);
+	CPOmin = min((u32)CPOmin,(u32)(tmp & 0x0000FFFFL));
+	CPOmax = max((u32)CPOmax,(u32)(tmp & 0xFFFF0000L)>>16);
+	CPOmax = max((u32)CPOmax,(u32)(tmp & 0x0000FFFFL));
+	tmp = in_be32(&ddr->debug[12]);  // CPO Lane 6/7
+	CPOmin = min((u32)CPOmin,(u32)(tmp & 0xFFFF0000L)>>16);
+	CPOmin = min((u32)CPOmin,(u32)(tmp & 0x0000FFFFL));
+	CPOmax = max((u32)CPOmax,(u32)(tmp & 0xFFFF0000L)>>16);
+	CPOmax = max((u32)CPOmax,(u32)(tmp & 0x0000FFFFL));
+#ifdef CONFIG_DDR_ECC
+	tmp = in_be32(&ddr->debug[13]);  // CPO ECC Lane
+	CPOmin = min((u32)CPOmin,(u32)(tmp & 0xFFFF0000L)>>16);
+	CPOmin = min((u32)CPOmin,(u32)(tmp & 0x0000FFFFL));
+	CPOmax = max((u32)CPOmax,(u32)(tmp & 0xFFFF0000L)>>16);
+	CPOmax = max((u32)CPOmax,(u32)(tmp & 0x0000FFFFL));
+#endif
+	tmp = in_be32(&ddr->debug[28]);
+	tmp &= 0xFF000000L;
+	tmp >>= 24;
+
+	if ((CPOmin + 0x3FL) < tmp){
+		tmp = in_be32(&ddr->debug[28]);
+		tmp &= 0x00FFFFFFL;
+		tmp |= ((((CPOmax + CPOmin)>>1) + 0x27) << 24);
+		out_be32(&ddr->debug[28], tmp );
+	}
+#endif
 	/*
 	 * For RDIMMs, JEDEC spec requires clocks to be stable before reset is
 	 * deasserted. Clocks start when any chip select is enabled and clock

@@ -169,6 +169,11 @@ phys_size_t fixed_sdram(void)
         int timeout;
         size_t ddr_size;
 
+#ifdef CONFIG_SYS_FSL_ERRATUM_A009942
+	u32 tmp;
+	u32 CPOmin, CPOmax;
+#endif
+
         out_be32(&ddr->sdram_cfg, DDR_SDRAM_CFG);
 
         out_be32(&ddr->cs0_bnds, DDR_CS0_BNDS);
@@ -204,6 +209,52 @@ phys_size_t fixed_sdram(void)
         out_be32(&ddr->ddr_cdr1, DDR_DDR_CDR1);
         out_be32(&ddr->sdram_cfg_2,  DDR_SDRAM_CFG_2);
         out_be32(&ddr->ddr_cdr2, DDR_DDR_CDR2);
+
+#ifdef CONFIG_SYS_FSL_ERRATUM_A009942
+	tmp = in_be32(&ddr->debug[28]);
+	tmp &= 0xFF0FFF00L;
+	tmp |= 0x0070006fL;
+	out_be32(&ddr->debug[28], tmp);
+
+	CPOmin = 0; CPOmax = 0;
+	tmp = in_be32(&ddr->debug[9]);   // CPO Lane 0/1
+	CPOmin = min((u32)CPOmin,(u32)(tmp & 0xFFFF0000L)>>16);
+	CPOmin = min((u32)CPOmin,(u32)(tmp & 0x0000FFFFL));
+	CPOmax = max((u32)CPOmax,(u32)(tmp & 0xFFFF0000L)>>16);
+	CPOmax = max((u32)CPOmax,(u32)(tmp & 0x0000FFFFL));
+	tmp = in_be32(&ddr->debug[10]);  // CPO Lane 2/3
+	CPOmin = min((u32)CPOmin,(u32)(tmp & 0xFFFF0000L)>>16);
+	CPOmin = min((u32)CPOmin,(u32)(tmp & 0x0000FFFFL));
+	CPOmax = max((u32)CPOmax,(u32)(tmp & 0xFFFF0000L)>>16);
+	CPOmax = max((u32)CPOmax,(u32)(tmp & 0x0000FFFFL));
+	tmp = in_be32(&ddr->debug[11]);  // CPO Lane 4/5
+	CPOmin = min((u32)CPOmin,(u32)(tmp & 0xFFFF0000L)>>16);
+	CPOmin = min((u32)CPOmin,(u32)(tmp & 0x0000FFFFL));
+	CPOmax = max((u32)CPOmax,(u32)(tmp & 0xFFFF0000L)>>16);
+	CPOmax = max((u32)CPOmax,(u32)(tmp & 0x0000FFFFL));
+	tmp = in_be32(&ddr->debug[12]);  // CPO Lane 6/7
+	CPOmin = min((u32)CPOmin,(u32)(tmp & 0xFFFF0000L)>>16);
+	CPOmin = min((u32)CPOmin,(u32)(tmp & 0x0000FFFFL));
+	CPOmax = max((u32)CPOmax,(u32)(tmp & 0xFFFF0000L)>>16);
+	CPOmax = max((u32)CPOmax,(u32)(tmp & 0x0000FFFFL));
+#ifdef CONFIG_DDR_ECC
+	tmp = in_be32(&ddr->debug[13]);  // CPO ECC Lane
+	CPOmin = min((u32)CPOmin,(u32)(tmp & 0xFFFF0000L)>>16);
+	CPOmin = min((u32)CPOmin,(u32)(tmp & 0x0000FFFFL));
+	CPOmax = max((u32)CPOmax,(u32)(tmp & 0xFFFF0000L)>>16);
+	CPOmax = max((u32)CPOmax,(u32)(tmp & 0x0000FFFFL));
+#endif /* CONFIG_DDR_ECC */
+	tmp = in_be32(&ddr->debug[28]);
+	tmp &= 0xFF000000L;
+	tmp >>= 24;
+
+	if ((CPOmin + 0x3FL) < tmp){
+		tmp = in_be32(&ddr->debug[28]);
+		tmp &= 0x00FFFFFFL;
+		tmp |= ((u32)(((CPOmax + CPOmin)>>1) + 0x27) << 24);
+		out_be32(&ddr->debug[28], tmp );
+	}
+#endif /* CONFIG_SYS_FSL_ERRATUM_A009942 */
 
         udelay(500);
         asm volatile("sync;isync");
