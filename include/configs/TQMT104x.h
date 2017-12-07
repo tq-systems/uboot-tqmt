@@ -10,7 +10,6 @@
 
 #include <linux/kconfig.h>
 
-#undef DEBUG
 /*
  * TQMT104x board configuration file
  */
