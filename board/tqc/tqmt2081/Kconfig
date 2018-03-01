@@ -1,0 +1,35 @@
+if TARGET_TQMT2081
+
+config SYS_BOARD
+	default "tqmt2081"
+
+config SYS_VENDOR
+	default "tqc"
+
+config SYS_CONFIG_NAME
+	default "TQMT2081"
+
+choice
+        prompt "TQMT2081 RCW configuration file"
+        default RCW_CFG_TQMT2081_SERDES71
+        help
+          select the RCW configuration file to be used for TQMT2081
+
+config RCW_CFG_TQMT2081_SERDES71
+        bool "TQMT2081 RCW configuration for SERDES mode = 71, default RCW configuration"
+        help
+          Select SERDES mode = 71 in reset configuration word.
+
+config RCW_CFG_TQMT2081_SERDESF2
+        bool "TQMT2081 RCW configuration for SERDES mode = F2"
+        help
+          Select SERDES mode = F2 in reset configuration word.
+
+endchoice
+
+config SYS_FSL_RCW
+        string
+        default "board/tqc/tqmt2081/tqmt2081_serdes71_rcw.cfg" if RCW_CFG_TQMT2081_SERDES71
+        default "board/tqc/tqmt2081/tqmt2081_serdesf2_rcw.cfg" if RCW_CFG_TQMT2081_SERDESF2
+
+endif
