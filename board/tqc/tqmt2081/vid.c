@@ -12,6 +12,7 @@
 
 #include <common.h>
 #include <i2c.h>
+#include <errno.h>
 
 #define SYSCTRLUC_I2C_ADDR		0x11
 #define SYSCTRLUC_I2C_REG_VID_VALUE	0x09
@@ -40,11 +41,27 @@ static void usleep(int i)
 static int set_voltage(u8 vid)
 {
 	int ret;
+	u8 vid_readback;
 
-	/* write to uC I2C register */
+	/* write to uC I2C register VID_VALUE */
 	ret = i2c_write(SYSCTRLUC_I2C_ADDR, SYSCTRLUC_I2C_REG_VID_VALUE,
 			1, (void *)&vid, sizeof(vid));
 
+	/* wait for value to settle */
+	usleep(1000);
+
+	/* read uC I2C register VID_VALUE
+	 * If the value is written and the VID setting is confirmed, the value
+	 * will be 0xCC.
+	 */
+	ret = i2c_read(SYSCTRLUC_I2C_ADDR, SYSCTRLUC_I2C_REG_VID_VALUE,
+		       1, (void *)&vid_readback, sizeof(vid_readback));
+
+	if (vid_readback != 0xCC) {
+		printf("VID: error, uC did not confirm setting of voltage\n");
+		printf("VID: uC vid_value reg: 0x%02x\n", vid_readback);
+		return -ETIMEDOUT;
+	}
 	return ret;
 }
 
@@ -121,12 +138,9 @@ int adjust_vdd(void)
 	ret = set_voltage(vid);
 
 	if (ret < 0) {
-		printf("VID: error on setting VID voltage\n");
+		printf("VID: error %i on setting VID voltage\n", ret);
 		return -1;
 	}
-
-	/* wait for value to settle */
-	usleep(1000);
 
 	/* divide and round up by 10 to get a value in mV */
 	vdd_target = DIV_ROUND_UP(vdd_target, 10);
