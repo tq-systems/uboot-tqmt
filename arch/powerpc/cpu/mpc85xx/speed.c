@@ -457,7 +457,7 @@ void get_sys_info(sys_info_t *sys_info)
 #endif
 
 #ifdef CONFIG_FSL_ESDHC_USE_PERIPHERAL_CLK
-#if defined(CONFIG_PPC_T2080)
+#if defined(CONFIG_PPC_T2080) || defined(CONFIG_PPC_T2081)
 #define ESDHC_CLK_SEL	0x00000007
 #define ESDHC_CLK_SHIFT	0
 #define ESDHC_CLK_RCWSR	15
@@ -481,7 +481,7 @@ void get_sys_info(sys_info_t *sys_info)
 	case 4:
 		sys_info->freq_sdhc = freq_c_pll[CONFIG_SYS_SDHC_CLK] / 4;
 		break;
-#if defined(CONFIG_PPC_T2080)
+#if defined(CONFIG_PPC_T2080) || defined(CONFIG_PPC_T2081)
 	case 5:
 		sys_info->freq_sdhc = freq_c_pll[1 - CONFIG_SYS_SDHC_CLK];
 		break;
