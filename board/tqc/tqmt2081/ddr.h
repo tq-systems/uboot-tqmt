@@ -43,25 +43,25 @@ static const struct board_specific_parameters *udimms[] = {
 
 /* extracted from FSL_DDR raw timing */
 /* 0x67040008 instead of 0xe7040008 to make sure MEM_EN is not set too early*/
-#define DDR_SDRAM_CFG                   0x67040008
+#define DDR_SDRAM_CFG                   0x67040000
 #define DDR_CS0_BNDS                    0x0000007F
 #define DDR_CS0_CONFIG                  0x80044302
 #define DDR_CS0_CONFIG2                 0x00000000
-#define DDR_TIMING_CFG_0                0x9011010e
-#define DDR_TIMING_CFG_1                0xd0d8be57
-#define DDR_TIMING_CFG_2                0x0048e161
-#define DDR_TIMING_CFG_3                0x020e1000
+#define DDR_TIMING_CFG_0                0x9011000E
+#define DDR_TIMING_CFG_1                0xD0D8BE57
+#define DDR_TIMING_CFG_2                0x0048E161
+#define DDR_TIMING_CFG_3                0x020E1000
 #define DDR_TIMING_CFG_4                0x00000001
 #define DDR_TIMING_CFG_5                0x05401400
-#define DDR_SDRAM_CFG_2                 0x24401310
-#define DDR_SDRAM_MODE                  0x00461e14
+#define DDR_SDRAM_CFG_2                 0x00401110
+#define DDR_SDRAM_MODE                  0x00441E14
 #define DDR_SDRAM_MODE_2                0x00200000
-#define DDR_SDRAM_INTERVAL              0x0e380100
-#define DDR_DDR_WRLVL_CNTL              0x86752607
-#define DDR_DDR_WRLVL_CNTL_2            0x00000000
-#define DDR_DDR_WRLVL_CNTL_3            0x00000000
+#define DDR_SDRAM_INTERVAL              0x0E380100
+#define DDR_DDR_WRLVL_CNTL              0x8675F609
+#define DDR_DDR_WRLVL_CNTL_2            0x09080808
+#define DDR_DDR_WRLVL_CNTL_3            0x0706060A
 #define DDR_DDR_CDR1                    0x80040000
-#define DDR_DDR_CDR2                    0x00000001
+#define DDR_DDR_CDR2                    0x80040000
 #define DDR_SDRAM_CLK_CNTL              0x02000000
 #define DDR_DDR_ZQ_CNTL                 0x89080600
 #define DDR_DATA_INIT                   0xDEADBEEF
