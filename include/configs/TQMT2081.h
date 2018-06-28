@@ -162,18 +162,6 @@ unsigned long get_board_ddr_clk(void);
 #define CONFIG_DIMM_SLOTS_PER_CTLR	1
 #define CONFIG_CHIP_SELECTS_PER_CTRL	(1 * CONFIG_DIMM_SLOTS_PER_CTLR)
 #define CONFIG_SYS_SDRAM_SIZE	2048		/* for fixed parameter use */
-/*
- * Use fixed DDR timing
- *
- * DDR_RAW_TIMING was only used for bringup/debugging.
- * If DDR_RAW_TIMING shall be used for testing purposes, define
- * CONFIG_SYS_DDR_RAW_TIMING here.
- */
-#define CONFIG_SYS_DDR_RAW_TIMING
-#ifdef CONFIG_SYS_DDR_RAW_TIMING
-#define CONFIG_FSL_DDR_INTERACTIVE
-#define CONFIG_SYS_FSL_DDR3
-#endif
 
 /*
  * IFC Definitions
