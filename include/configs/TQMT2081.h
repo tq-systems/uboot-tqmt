@@ -553,7 +553,7 @@ unsigned long get_board_ddr_clk(void);
 #define CONFIG_UBOOTPATH "u-boot.bin"	/* U-Boot image on TFTP server */
 
 /* default location for tftp and bootm */
-#define CONFIG_LOADADDR		1000000
+#define CONFIG_LOADADDR		0x4000000
 #define CONFIG_BAUDRATE		115200
 #define CONFIG_BOOTDELAY	10	/* -1 disables auto-boot */
 #define __USB_PHY_TYPE		utmi
@@ -563,7 +563,7 @@ unsigned long get_board_ddr_clk(void);
 	"ctlr_intlv=" __stringify(CTRL_INTLV_PREFERED) ","	\
 	"bank_intlv=auto;"					\
 	"usb1:dr_mode=host,phy_type=" __stringify(__USB_PHY_TYPE) "\0"\
-	"netdev=eth0\0"						\
+	"netdev=fm1-mac2\0"						\
 	"uboot=" __stringify(CONFIG_UBOOTPATH) "\0"		\
 	"ubootaddr=" __stringify(CONFIG_SYS_TEXT_BASE) "\0"	\
 	"tftpflash=tftpboot $loadaddr $uboot && "		\
@@ -575,7 +575,7 @@ unsigned long get_board_ddr_clk(void);
 	"consoledev=ttyS0\0"					\
 	"ramdiskaddr=2000000\0"					\
 	"ramdiskfile=t2080rdb/ramdisk.uboot\0"			\
-	"fdtaddr=c00000\0"					\
+	"fdtaddr=0xe00000\0"					\
 	"fdtfile=t2080rdb/t2080rdb.dtb\0"			\
 	"bdev=sda3\0"
 
@@ -611,13 +611,7 @@ unsigned long get_board_ddr_clk(void);
 	"cpu 7 release 0x01000000 - - -;"		\
 	"go 0x01000000"
 
-#define CONFIG_LINUX				\
-	"setenv bootargs root=/dev/ram rw "		\
-	"console=$consoledev,$baudrate $othbootargs;"	\
-	"setenv ramdiskaddr 0x02000000;"		\
-	"setenv fdtaddr 0x00c00000;"			\
-	"setenv loadaddr 0x1000000;"			\
-	"bootm $loadaddr $ramdiskaddr $fdtaddr"
+#define CONFIG_LINUX
 
 #define CONFIG_HDBOOT					\
 	"setenv bootargs root=/dev/$bdev rw "		\
