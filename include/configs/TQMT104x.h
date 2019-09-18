@@ -702,7 +702,10 @@
 	"cp.b $loadaddr $rcw_addr_flsh $filesize; " 		\
 	"else echo RCW file not found!; fi\0"			\
 	"flashboot=" CONFIG_HDBOOT "\0"				\
-	"mmcboot=" CONFIG_MMCBOOT "\0"
+	"mmcboot=" CONFIG_MMCBOOT "\0"				\
+	"nfsboot=" CONFIG_NFSBOOTCOMMAND "\0"			\
+	"norboot=" CONFIG_NORBOOTCOMMAND "\0"			\
+	"sdboot=" CONFIG_SDCARDBOOTCOMMAND "\0"
 
 #define CONFIG_LINUX
 
