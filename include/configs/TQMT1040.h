@@ -16,8 +16,8 @@
  * set in default environment
  * for nfs boot and sd card boot
  */
-#define CONFIG_BOOTFILE "boot/uImage-tqmt1040-64b-stk.bin"
-#define FDTFILE         "boot/uImage-tqmt1040.dtb"
+#define CONFIG_BOOTFILE "tqmt1040-linuximage"
+#define FDTFILE         "tqmt1040-stkt104x.dtb"
 
 #include <configs/TQMT104x.h>
 
