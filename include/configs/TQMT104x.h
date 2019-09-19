@@ -681,7 +681,7 @@
 	"ramdiskaddr_flsh=0xe8840000\0"				\
 	"ramdiskfile=" __stringify(RAMDISKFILE) "\0"		\
 	"ramdisk_size=0x2500000\0"				\
-	"fdtaddr=0xe00000\0"					\
+	"fdtaddr=0x3e00000\0"					\
 	"fdtaddr_flsh=0xe8820000\0"				\
 	"fdtfile=" __stringify(FDTFILE) "\0"			\
 	"baudrate=115200\0"					\
