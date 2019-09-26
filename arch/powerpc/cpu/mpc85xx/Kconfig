@@ -143,13 +143,17 @@ config TARGET_STXGP3
 config TARGET_STXSSA
 	bool "Support stxssa"
 
+config TARGET_TQMT1022
+	bool "Support TQMT1022"
+	select SUPPORT_SPL
+
 config TARGET_TQMT1040
-        bool "Support TQMT1040"
-        select SUPPORT_SPL
+	bool "Support TQMT1040"
+	select SUPPORT_SPL
 
 config TARGET_TQMT1042
-        bool "Support TQMT1042"
-        select SUPPORT_SPL
+	bool "Support TQMT1042"
+	select SUPPORT_SPL
 
 config TARGET_TQMT2081
         bool "Support TQMT2081"
