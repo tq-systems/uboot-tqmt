@@ -663,7 +663,7 @@
 /* FDTFILE moved to TQMT1040.h resp. TQMT1042.h*/
 
 #ifdef CONFIG_FSL_DIU_FB
-#define DIU_ENVIRONMENT "video-mode=fslfb:1024x768-24@60"
+#define DIU_ENVIRONMENT "video-mode=fslfb:1024x768-24@60,monitor=lvds"
 #else
 #define DIU_ENVIRONMENT
 #endif
