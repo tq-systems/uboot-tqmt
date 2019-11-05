@@ -647,7 +647,7 @@
  * Environment Configuration
  */
 #define CONFIG_ROOTPATH		"/srv/nfs/rootfs-64b"
-/* CONFIG_BOOTFILE moved to TQMT1040.h resp. TQMT1042.h*/
+#define CONFIG_BOOTFILE		"linuximage"
 
 #define CONFIG_UBOOTPATH	"u-boot/u-boot_tqmt1042.bin"	/* U-Boot image on TFTP server*/
 
