@@ -650,7 +650,7 @@
 #define CONFIG_BOOTFILE		"linuximage"
 
 /* U-Boot image on TFTP server*/
-#define CONFIG_UBOOTPATH	"u-boot_tqmt1042.bin"
+#define CONFIG_UBOOTPATH	"u-boot-nor-2015.07-tqmt-r1.bin"
 
 /* default location for tftp and bootm */
 #define CONFIG_LOADADDR		0x4000000
