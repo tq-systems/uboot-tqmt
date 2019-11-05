@@ -663,6 +663,12 @@
 #define RAMDISKFILE	"ramdisk.ext2.gz.u-boot"
 /* FDTFILE moved to TQMT1040.h resp. TQMT1042.h*/
 
+#ifdef CONFIG_RCW_CFG_TQMT1042_SERDES88
+#define RCWFILE		"fsl_rcw-nor-TQMT1042_SERDES88.bin"
+#else
+#define RCWFILE		"fsl_rcw-nor-TQMT1042_SERDES86.bin"
+#endif
+
 #ifdef CONFIG_FSL_DIU_FB
 #define DIU_ENVIRONMENT "video-mode=fslfb:1024x768-24@60,monitor=lvds"
 #else
@@ -692,7 +698,7 @@
 	"ethprime=FM1@DTSEC4\0"					\
 	"kerneladdr_flsh=e8020000\0"				\
 	"fman_ucodeaddr_flsh=eff00000\0"			\
-	"rcwfile=fsl_rcw_tqmt1042.bin\0"			\
+	"rcwfile=" __stringify(RCWFILE) "\0"			\
 	"rcw_addr_flsh=0xe8000000\0"				\
 	"upd_uboot=if tftp $uboot; then echo updating "		\
 	"u-boot...; "						\
