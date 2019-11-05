@@ -649,7 +649,8 @@
 #define CONFIG_ROOTPATH		"/srv/nfs/tqmt104x"
 #define CONFIG_BOOTFILE		"linuximage"
 
-#define CONFIG_UBOOTPATH	"u-boot/u-boot_tqmt1042.bin"	/* U-Boot image on TFTP server*/
+/* U-Boot image on TFTP server*/
+#define CONFIG_UBOOTPATH	"u-boot_tqmt1042.bin"
 
 /* default location for tftp and bootm */
 #define CONFIG_LOADADDR		0x4000000
@@ -659,7 +660,7 @@
 #define CONFIG_BAUDRATE	115200
 
 #define __USB_PHY_TYPE	utmi
-#define RAMDISKFILE	"uboot/ramdisk.ext2.gz.u-boot"
+#define RAMDISKFILE	"ramdisk.ext2.gz.u-boot"
 /* FDTFILE moved to TQMT1040.h resp. TQMT1042.h*/
 
 #ifdef CONFIG_FSL_DIU_FB
@@ -691,7 +692,7 @@
 	"ethprime=FM1@DTSEC4\0"					\
 	"kerneladdr_flsh=e8020000\0"				\
 	"fman_ucodeaddr_flsh=eff00000\0"			\
-	"rcwfile=rcw/fsl_rcw_tqmt1042.bin\0"			\
+	"rcwfile=fsl_rcw_tqmt1042.bin\0"			\
 	"rcw_addr_flsh=0xe8000000\0"				\
 	"upd_uboot=if tftp $uboot; then echo updating "		\
 	"u-boot...; "						\
