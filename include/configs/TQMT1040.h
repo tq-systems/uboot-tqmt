@@ -16,7 +16,7 @@
  * name and path of device tree set in default environment
  * for nfs boot and sd card boot
  */
-#define FDTFILE         "tqmt1040-stkt104x.dtb"
+#define FDT_FILE         "tqmt1040-stkt104x.dtb"
 
 #include <configs/TQMT104x.h>
 

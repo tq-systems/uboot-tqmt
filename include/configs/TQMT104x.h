@@ -658,13 +658,13 @@
 #define CONFIG_BAUDRATE	115200
 
 #define __USB_PHY_TYPE	utmi
-#define RAMDISKFILE	"ramdisk.ext2.gz.u-boot"
-/* FDTFILE moved to TQMT1040.h resp. TQMT1042.h*/
+#define RAMDISK_FILE	"ramdisk.ext2.gz.u-boot"
+/* FDT_FILE moved to TQMT1040.h resp. TQMT1042.h*/
 
 #ifdef CONFIG_RCW_CFG_TQMT1042_SERDES88
-#define RCWFILE		"fsl_rcw-nor-TQMT1042_SERDES88.bin"
+#define RCW_FILE		"fsl_rcw-nor-TQMT1042_SERDES88.bin"
 #else
-#define RCWFILE		"fsl_rcw-nor-TQMT1042_SERDES86.bin"
+#define RCW_FILE		"fsl_rcw-nor-TQMT1042_SERDES86.bin"
 #endif
 
 #ifdef CONFIG_FSL_DIU_FB
@@ -680,23 +680,23 @@
 	"netdev=fm1-mac3\0"					\
 	"video-mode=" __stringify(DIU_ENVIRONMENT) "\0"		\
 	"uboot=" __stringify(CONFIG_UBOOTPATH) "\0"		\
-	"ubootaddr=" __stringify(CONFIG_SYS_TEXT_BASE) "\0"	\
-	"ubootaddr_flsh=0xeff40000\0"				\
+	"uboot_addr=" __stringify(CONFIG_SYS_TEXT_BASE) "\0"	\
+	"uboot_addr_flsh=0xeff40000\0"				\
 	"uboot_size=0xc0000\0"					\
 	"consoledev=ttyS0\0"					\
-	"ramdiskaddr=0x2000000\0"				\
-	"ramdiskaddr_flsh=0xe8840000\0"				\
-	"ramdiskfile=" __stringify(RAMDISKFILE) "\0"		\
+	"ramdisk_addr=0x2000000\0"				\
+	"ramdisk_addr_flsh=0xe8840000\0"			\
+	"ramdisk_file=" __stringify(RAMDISK_FILE) "\0"		\
 	"ramdisk_size=0x2500000\0"				\
-	"fdtaddr=0x3e00000\0"					\
-	"fdtaddr_flsh=0xe8820000\0"				\
-	"fdtfile=" __stringify(FDTFILE) "\0"			\
+	"fdt_addr=0x3e00000\0"					\
+	"fdt_addr_flsh=0xe8820000\0"				\
+	"fdt_file=" __stringify(FDT_FILE) "\0"			\
 	"baudrate=115200\0"					\
 	"ethact=FM1@DTSEC4\0"					\
 	"ethprime=FM1@DTSEC4\0"					\
-	"kerneladdr_flsh=e8020000\0"				\
-	"fman_ucodeaddr_flsh=eff00000\0"			\
-	"rcwfile=" __stringify(RCWFILE) "\0"			\
+	"kernel_addr_flsh=e8020000\0"				\
+	"fman_ucode_addr_flsh=eff00000\0"			\
+	"rcw_file=" __stringify(RCW_FILE) "\0"			\
 	"rcw_addr_flsh=0xe8000000\0"				\
 	"upd_uboot=if tftp $uboot; then echo updating "		\
 	"u-boot...; "						\
@@ -720,41 +720,40 @@
 	"setenv bootargs root=/dev/ram rw "            		\
 	"console=$consoledev,$baudrate $othbootargs "  		\
 	"ramdisk_size=$ramdisk_size; "	    			\
-	"bootm $kerneladdr_flsh $ramdiskaddr_flsh "		\
-	"$fdtaddr_flsh"
+	"bootm $kernel_addr_flsh $ramdisk_addr_flsh "		\
+	"$fdt_addr_flsh"
 
 #define CONFIG_MMCBOOT						\
 	"setenv bootargs root=/dev/mmcblk0p1 rw "		\
 	"rootfstype=ext2 rootwait "				\
 	"ip=$ipaddr:$serverip:$gatewayip:$netmask:$hostname:$netdev:off " \
 	"console=$consoledev,$baudrate $othbootargs; "		\
-	"ext2load mmc 0:1 $fdtaddr $fdtfile; "			\
+	"ext2load mmc 0:1 $fdt_addr $fdt_file; "		\
 	"ext2load mmc 0:1 $loadaddr $bootfile; " 		\
-	"bootm $loadaddr - $fdtaddr"
+	"bootm $loadaddr - $fdt_addr"
 
 #define CONFIG_NFSBOOTCOMMAND					\
 	"setenv bootargs root=/dev/nfs rw "			\
 	"nfsroot=$serverip:$rootpath "				\
 	"ip=$ipaddr:$serverip:$gatewayip:$netmask:$hostname:$netdev:off " \
 	"console=$consoledev,$baudrate $othbootargs; "		\
-	"nfs $loadaddr $serverip:$rootpath/$bootfile; "		\
-	"nfs $fdtaddr $serverip:$rootpath/$fdtfile; "		\
-	"bootm $loadaddr - $fdtaddr"
+	"nfs $loadaddr $serverip:$rootpath/$bootfile; "	\
+	"nfs $fdt_addr $serverip:$rootpath/$fdt_file; "		\
+	"bootm $loadaddr - $fdt_addr"
 
 #define CONFIG_NORBOOTCOMMAND \
 	"setenv bootargs root=/dev/mtdblock3 rootfstype=jffs2 rootwait rw " \
 	"ip=$ipaddr:$serverip:$gatewayip:$netmask:$hostname:$netdev:off " \
 	"console=$consoledev,$baudrate $othbootargs; " \
-	"bootm 0xe8020000 - 0xe8820000"
-
+	"bootm $kernel_addr_flsh - $fdt_addr_flsh"
 
 #define CONFIG_SDCARDBOOTCOMMAND \
 	"setenv bootargs root=/dev/mmcblk0p2 rw rootwait " \
 	"ip=$ipaddr:$serverip:$gatewayip:$netmask:$hostname:$netdev:off " \
 	"console=$consoledev,$baudrate $othbootargs; "		\
 	"fatload mmc 0:1 $loadaddr $bootfile; " \
-	"fatload mmc 0:1 $fdtaddr $fdtfile; " \
-	"bootm $loadaddr - $fdtaddr"
+	"fatload mmc 0:1 $fdt_addr $fdt_file; " \
+	"bootm $loadaddr - $fdt_addr"
 
 
 #ifdef CONFIG_SDCARD
