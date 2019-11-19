@@ -13,8 +13,6 @@
 /*
  * TQMT104x board configuration file
  */
-#define CONFIG_BOOTFILE	"linuximage"
-
 #define CONFIG_PHYS_64BIT
 #define CONFIG_SYS_GENERIC_BOARD
 #define CONFIG_DISPLAY_BOARDINFO
