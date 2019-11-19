@@ -661,6 +661,9 @@
 #define RAMDISK_FILE	"ramdisk.ext2.gz.u-boot"
 /* FDT_FILE moved to TQMT1040.h resp. TQMT1042.h*/
 
+#define FMAN_UCODE_FILE		"fsl_fman_ucode_t1040_r1.1_107_4_2.bin"
+#define ROOTFS_FILE		"tq-image-generic-tqmt1042-64bit-stkt104x.jffs2"
+
 #ifdef CONFIG_RCW_CFG_TQMT1042_SERDES88
 #define RCW_FILE		"fsl_rcw-nor-TQMT1042_SERDES88.bin"
 #else
@@ -672,6 +675,51 @@
 #else
 #define DIU_ENVIRONMENT
 #endif
+
+#define TQMT104x_UPDATE_ENV_SETINGS                                            \
+	"set_getcmd=if test \"${ipmode}\" != static; then "                    \
+			"setenv getcmd dhcp; setenv autoload yes; "            \
+		"else setenv getcmd tftp; setenv autoload no; fi\0"            \
+	"ipmode=static\0"                                                      \
+	"nor_update=run set_getcmd; "                                          \
+		"if ${getcmd} ${nor_file}; then "                              \
+			"if itest ${filesize} > 0; then "                      \
+				"echo updating ${nor_name}...; "               \
+				"protect off ${nor_addr_flsh} +${filesize}; "  \
+				"erase ${nor_addr_flsh} +${filesize}; "        \
+				"cp.b ${loadaddr} "                            \
+					"${nor_addr_flsh} ${filesize}; "       \
+				"protect on ${nor_addr_flsh} +${filesize}; "   \
+			"else echo no ${nor_name} size!; "                     \
+			"fi; "                                                 \
+		"else echo ${nor_name} file not found!; "                      \
+		"fi; "                                                         \
+		"setenv getcmd; setenv filesize; "                             \
+		"setenv nor_addr_flsh; setenv nor_file; setenv nor_name\0"     \
+	"update_nor_uboot=setenv nor_addr_flsh ${uboot_addr_flsh}; "           \
+		"setenv nor_file ${uboot}; "                                   \
+		"setenv nor_name 'u-boot'; "                                   \
+		"run nor_update;\0"                                            \
+	"update_nor_rcw=setenv nor_addr_flsh ${rcw_addr_flsh}; "               \
+		"setenv nor_file ${rcw_file}; "                                \
+		"setenv nor_name 'rcw'; "                                      \
+		"run nor_update;\0"                                            \
+	"update_nor_kernel=setenv nor_addr_flsh ${kernel_addr_flsh}; "         \
+		"setenv nor_file ${bootfile}; "                                \
+		"setenv nor_name 'kernel'; "                                   \
+		"run nor_update;\0"                                            \
+	"update_nor_fdt=setenv nor_addr_flsh ${fdt_addr_flsh}; "               \
+		"setenv nor_file ${fdt_file}; "                                \
+		"setenv nor_name 'fdt'; "                                      \
+		"run nor_update;\0"                                            \
+	"update_nor_rootfs=setenv nor_addr_flsh ${rootfs_addr_flsh}; "         \
+		"setenv nor_file ${rootfs_file}; "                             \
+		"setenv nor_name 'rootfs'; "                                   \
+		"run nor_update;\0"                                            \
+	"update_nor_fman_ucode=setenv nor_addr_flsh ${fman_ucode_addr_flsh}; " \
+		"setenv nor_file ${fman_ucode_file}; "                         \
+		"setenv nor_name 'fman_ucode'; "                               \
+		"run nor_update;\0"                                            \
 
 #define	CONFIG_EXTRA_ENV_SETTINGS				\
 	"hwconfig=fsl_ddr:bank_intlv=cs0_cs1;"              	\
@@ -694,25 +742,19 @@
 	"baudrate=115200\0"					\
 	"ethact=FM1@DTSEC4\0"					\
 	"ethprime=FM1@DTSEC4\0"					\
-	"kernel_addr_flsh=e8020000\0"				\
-	"fman_ucode_addr_flsh=eff00000\0"			\
+	"kernel_addr_flsh=0xe8020000\0"				\
+	"fman_ucode_addr_flsh=0xeff00000\0"			\
+	"fman_ucode_file=" __stringify(FMAN_UCODE_FILE) "\0"	\
 	"rcw_file=" __stringify(RCW_FILE) "\0"			\
 	"rcw_addr_flsh=0xe8000000\0"				\
-	"upd_uboot=if tftp $uboot; then echo updating "		\
-	"u-boot...; "						\
-	"protect off $ubootaddr_flsh +$uboot_size; "		\
-	"erase $ubootaddr_flsh +$uboot_size; " 			\
-	"cp.b $loadaddr $ubootaddr_flsh $uboot_size; " 		\
-	"else echo u-boot file not found!; fi\0"		\
-	"upd_rcw=if tftp $loadaddr $rcwfile; then echo "	\
-	"updating rcw...; erase 0xe8000000 +1; "		\
-	"cp.b $loadaddr $rcw_addr_flsh $filesize; " 		\
-	"else echo RCW file not found!; fi\0"			\
+	"rootfs_addr_flsh=0xe8840000\0"				\
+	"rootfs_file=" __stringify(ROOTFS_FILE)"\0"		\
 	"flashboot=" CONFIG_HDBOOT "\0"				\
 	"mmcboot=" CONFIG_MMCBOOT "\0"				\
 	"nfsboot=" CONFIG_NFSBOOTCOMMAND "\0"			\
 	"norboot=" CONFIG_NORBOOTCOMMAND "\0"			\
-	"sdboot=" CONFIG_SDCARDBOOTCOMMAND "\0"
+	"sdboot=" CONFIG_SDCARDBOOTCOMMAND "\0"			\
+	TQMT104x_UPDATE_ENV_SETINGS
 
 #define CONFIG_LINUX
 
