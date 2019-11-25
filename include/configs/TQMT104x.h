@@ -663,6 +663,7 @@
 
 #define FMAN_UCODE_FILE		"fsl_fman_ucode_t1040_r1.1_107_4_2.bin"
 #define ROOTFS_FILE		"tq-image-generic-tqmt1042-64bit-stkt104x.jffs2"
+#define WIC_FILE		"tq-image-generic-tqmt1042-64bit-stkt104x.wic"
 
 #ifdef CONFIG_RCW_CFG_TQMT1042_SERDES88
 #define RCW_FILE		"fsl_rcw-nor-TQMT1042_SERDES88.bin"
@@ -685,6 +686,8 @@
 	"fman_ucode_mmc_blk_start=0x820\0"                                     \
 	"rcw_mmc_blk_start=0x8\0"                                              \
 	"uboot_mmc_blk_start=0x8\0"                                            \
+	"wic_mmc_blk_start=0x0\0"                                              \
+	"wic_file=" __stringify(WIC_FILE) "\0"                                 \
 	"nor_update=run set_getcmd; "                                          \
 		"if ${getcmd} ${nor_file}; then "                              \
 			"if itest ${filesize} > 0; then "                      \
@@ -739,6 +742,10 @@
 		"fi; "                                                         \
 		"setenv getcmd; setenv filesize; setenv blkc; "                \
 		"setenv mmc_blk_start; setenv mmc_file; setenv mmc_name;\0"    \
+	"update_mmc=setenv mmc_name 'wic image'; "                             \
+		"setenv mmc_blk_start ${wic_mmc_blk_start}; "                  \
+		"setenv mmc_file ${wic_file}; "                                \
+		"run mmc_update;\0"                                            \
 	"update_mmc_uboot=setenv mmc_name 'u-boot'; "                          \
 		"setenv mmc_blk_start ${uboot_mmc_blk_start}; "                \
 		"setenv mmc_file ${uboot}; "                                   \
