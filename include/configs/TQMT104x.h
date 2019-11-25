@@ -681,6 +681,10 @@
 			"setenv getcmd dhcp; setenv autoload yes; "            \
 		"else setenv getcmd tftp; setenv autoload no; fi\0"            \
 	"ipmode=static\0"                                                      \
+	"mmcdev=0\0"                                                           \
+	"fman_ucode_mmc_blk_start=0x820\0"                                     \
+	"rcw_mmc_blk_start=0x8\0"                                              \
+	"uboot_mmc_blk_start=0x8\0"                                            \
 	"nor_update=run set_getcmd; "                                          \
 		"if ${getcmd} ${nor_file}; then "                              \
 			"if itest ${filesize} > 0; then "                      \
@@ -720,6 +724,48 @@
 		"setenv nor_file ${fman_ucode_file}; "                         \
 		"setenv nor_name 'fman_ucode'; "                               \
 		"run nor_update;\0"                                            \
+	"mmc_update=run set_getcmd; "                                          \
+		"mmc dev ${mmcdev}; mmc rescan; "                              \
+		"if ${getcmd} ${mmc_file}; then "                              \
+			"if itest ${filesize} > 0; then "                      \
+				"setexpr blkc ${filesize} + 0x1ff; "           \
+				"setexpr blkc ${blkc} / 0x200; "               \
+				"echo updating ${mmc_name}...; "               \
+				"mmc write ${loadaddr} "                       \
+					"${mmc_blk_start} ${blkc}; "           \
+			"else echo no ${mmc_name} size!; "                     \
+			"fi; "                                                 \
+		"else echo ${mmc_name} file not found!; "                      \
+		"fi; "                                                         \
+		"setenv getcmd; setenv filesize; setenv blkc; "                \
+		"setenv mmc_blk_start; setenv mmc_file; setenv mmc_name;\0"    \
+	"update_mmc_uboot=setenv mmc_name 'u-boot'; "                          \
+		"setenv mmc_blk_start ${uboot_mmc_blk_start}; "                \
+		"setenv mmc_file ${uboot}; "                                   \
+		"run mmc_update;\0"                                            \
+	"update_mmc_rcw=setenv mmc_name 'rcw'; "                               \
+		"setenv mmc_blk_start ${rcw_mmc_blk_start}; "                  \
+		"setenv mmc_file ${rcw_file}; "                                \
+		"mmc dev ${mmcdev}; mmc rescan; "                              \
+		"mmc read ${loadaddr} ${rcw_mmc_blk_start} 80;"                \
+		"run mmc_update;\0"                                            \
+/* variable position
+	"update_mmc_kernel=setenv mmc_name 'kernel'; "                         \
+		"setenv mmc_blk_start ${kernel_mmc_blk_start}; "               \
+		"setenv mmc_file ${bootfile}; "                                \
+		"run mmc_update;\0"                                            \
+	"update_mmc_fdt=setenv mmc_name 'fdt'; "                               \
+		"setenv mmc_blk_start ${fdt_mmc_blk_start}; "                  \
+		"setenv mmc_file ${fdt_file}; "                                \
+		"run mmc_update;\0"                                            \
+	"update_mmc_rootfs=setenv mmc_name 'rootfs'; "                         \
+		"setenv mmc_blk_start ${rootfs_mmc_blk_start}; "               \
+		"setenv mmc_file ${rootfs_file}; "                             \
+		"run mmc_update;\0"                                            \
+*/	"update_mmc_fman_ucode=setenv mmc_name 'fman_ucode'; "                 \
+		"setenv mmc_blk_start ${fman_ucode_mmc_blk_start}; "           \
+		"setenv mmc_file ${fman_ucode_file}; "                         \
+		"run mmc_update;\0"                                            \
 
 #define	CONFIG_EXTRA_ENV_SETTINGS				\
 	"hwconfig=fsl_ddr:bank_intlv=cs0_cs1;"              	\
