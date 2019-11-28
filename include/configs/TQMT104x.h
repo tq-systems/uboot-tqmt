@@ -665,10 +665,17 @@
 #define ROOTFS_FILE		"tq-image-generic-tqmt1042-64bit-stkt104x.jffs2"
 #define WIC_FILE		"tq-image-generic-tqmt1042-64bit-stkt104x.wic"
 
-#ifdef CONFIG_RCW_CFG_TQMT1042_SERDES88
-#define RCW_FILE		"fsl_rcw-nor-TQMT1042_SERDES88.bin"
-#else
+/* RCW file name */
+#ifdef CONFIG_RCW_CFG_TQMT1040_SERDES66
+#define RCW_FILE		"fsl_rcw-nor-TQMT1040_SERDES66.bin"
+#elif CONFIG_RCW_CFG_TQMT1042_SERDES86
 #define RCW_FILE		"fsl_rcw-nor-TQMT1042_SERDES86.bin"
+#elif CONFIG_RCW_CFG_TQMT1042_SERDES88
+#define RCW_FILE		"fsl_rcw-nor-TQMT1042_SERDES88.bin"
+#elif CONFIG_RCW_CFG_TQMT1042_SERDES8E
+#define RCW_FILE		"fsl_rcw-nor-TQMT1042_SERDES8E.bin"
+#else
+#define RCW_FILE		""
 #endif
 
 #ifdef CONFIG_FSL_DIU_FB
