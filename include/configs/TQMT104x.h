@@ -645,7 +645,7 @@
  * Environment Configuration
  */
 #define CONFIG_ROOTPATH		"/srv/nfs/tqmt104x"
-#define CONFIG_BOOTFILE		"linuximage"
+#define CONFIG_BOOTFILE		"uImage"
 
 /* U-Boot image on TFTP server*/
 #define CONFIG_UBOOTPATH	"u-boot-nor-2015.07-tqmt-r1.bin"
