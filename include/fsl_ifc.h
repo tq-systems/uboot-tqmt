@@ -58,6 +58,7 @@
 #define CSPR_V_SHIFT			0
 
 /* Convert an address into the right format for the CSPR Registers */
+#define CSPR_EXT_PHYS_ADDR(x)		(((uint64_t)x) >> 32)
 #define CSPR_PHYS_ADDR(x)		(((uint64_t)x) & 0xffff0000)
 
 /*
