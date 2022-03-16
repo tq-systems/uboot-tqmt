@@ -17,7 +17,11 @@
 #define CONFIG_SYS_GENERIC_BOARD
 #define CONFIG_DISPLAY_BOARDINFO
 
+#define CONFIG_BOOKE
 #define CONFIG_E500			/* BOOKE e500 family */
+#define CONFIG_E500MC			/* BOOKE e500mc family */
+#define CONFIG_SYS_BOOK3E_HV		/* Category E.HV supported */
+#define CONFIG_MP			/* support multiple processors */
 #include <asm/config_mpc85xx.h>
 
 #define CONFIG_PCI	/* Enable PCI/PCIE */
@@ -71,12 +75,6 @@
 #endif
 
 #endif
-
-/* High Level Configuration Options */
-#define CONFIG_BOOKE
-#define CONFIG_E500MC			/* BOOKE e500mc family */
-#define CONFIG_SYS_BOOK3E_HV		/* Category E.HV supported */
-#define CONFIG_MP			/* support multiple processors */
 
 /* support deep sleep */
 #undef CONFIG_DEEP_SLEEP /* TODO: disabled for bringup */
