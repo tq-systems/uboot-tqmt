@@ -17,7 +17,11 @@
 #define CONFIG_SYS_GENERIC_BOARD
 #define CONFIG_DISPLAY_BOARDINFO
 
+#define CONFIG_BOOKE
 #define CONFIG_E500			/* BOOKE e500 family */
+#define CONFIG_E500MC			/* BOOKE e500mc family */
+#define CONFIG_SYS_BOOK3E_HV		/* Category E.HV supported */
+#define CONFIG_MP			/* support multiple processors */
 #include <asm/config_mpc85xx.h>
 
 #define CONFIG_PCI	/* Enable PCI/PCIE */
@@ -71,12 +75,6 @@
 #endif
 
 #endif
-
-/* High Level Configuration Options */
-#define CONFIG_BOOKE
-#define CONFIG_E500MC			/* BOOKE e500mc family */
-#define CONFIG_SYS_BOOK3E_HV		/* Category E.HV supported */
-#define CONFIG_MP			/* support multiple processors */
 
 /* support deep sleep */
 #undef CONFIG_DEEP_SLEEP /* TODO: disabled for bringup */
@@ -209,8 +207,8 @@
 #define CONFIG_SYS_FLASH_BASE	0xe8000000
 #define CONFIG_SYS_FLASH_BASE_PHYS	(0xf00000000ull | CONFIG_SYS_FLASH_BASE)
 
-#define CONFIG_SYS_NOR_CSPR_EXT	(0xf)
-#define CONFIG_SYS_NOR_CSPR	(CSPR_PHYS_ADDR(CONFIG_SYS_FLASH_BASE) | \
+#define CONFIG_SYS_NOR_CSPR_EXT	CSPR_EXT_PHYS_ADDR(CONFIG_SYS_FLASH_BASE_PHYS)
+#define CONFIG_SYS_NOR_CSPR	(CSPR_PHYS_ADDR(CONFIG_SYS_FLASH_BASE_PHYS) | \
 				CSPR_PORT_SIZE_16 | \
 				CSPR_MSEL_NOR | \
 				CSPR_V)

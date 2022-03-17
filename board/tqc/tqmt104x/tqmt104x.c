@@ -21,6 +21,7 @@
 #include "tqmt104x.h"
 #include <i2c.h>
 #include <asm/io.h>
+#include <linux/sizes.h>
 #include <pca953x.h>
 
 DECLARE_GLOBAL_DATA_PTR;
@@ -180,8 +181,9 @@ int board_early_init_f(void)
 int board_early_init_r(void)
 {
 #ifdef CONFIG_SYS_FLASH_BASE
-	const unsigned int flashbase = CONFIG_SYS_FLASH_BASE;
-	int flash_esel = find_tlb_idx((void *)flashbase, 1);
+	int flash_esel = find_tlb_idx((void *)CONFIG_SYS_FLASH_BASE, 1);
+	int flash_esel2 =
+		find_tlb_idx((void *)(CONFIG_SYS_FLASH_BASE + SZ_64M), 1);
 	u32 srds_pll_ref_clk_sel_s1;
 	ccsr_gur_t *gur = (void *)(CONFIG_SYS_MPC85xx_GUTS_ADDR);
 	int ret;
@@ -198,15 +200,25 @@ int board_early_init_r(void)
 	if (flash_esel == -1) {
 		/* very unlikely unless something is messed up */
 		puts("Error: Could not find TLB for FLASH BASE\n");
-		flash_esel = 2;	/* give our best effort to continue */
 	} else {
 		/* invalidate existing TLB entry for flash */
 		disable_tlb(flash_esel);
+		set_tlb(1, CONFIG_SYS_FLASH_BASE, CONFIG_SYS_FLASH_BASE_PHYS,
+			MAS3_SX|MAS3_SW|MAS3_SR, MAS2_I|MAS2_G,
+			0, flash_esel, BOOKE_PAGESZ_64M, 1);
+	}
+	if (flash_esel2 == -1) {
+		/* very unlikely unless something is messed up */
+		puts("Error: Could not find TLB for FLASH BASE + 64M\n");
+	} else {
+		/* invalidate existing TLB entry for flash */
+		disable_tlb(flash_esel2);
+		set_tlb(1, CONFIG_SYS_FLASH_BASE + SZ_64M,
+			CONFIG_SYS_FLASH_BASE_PHYS + SZ_64M,
+			MAS3_SX|MAS3_SW|MAS3_SR, MAS2_I|MAS2_G,
+			0, flash_esel2, BOOKE_PAGESZ_64M, 1);
 	}
 
-	set_tlb(1, flashbase, CONFIG_SYS_FLASH_BASE_PHYS,
-		MAS3_SX|MAS3_SW|MAS3_SR, MAS2_I|MAS2_G,
-		0, flash_esel, BOOKE_PAGESZ_256M, 1);
 #endif
 	set_liodns();
 #ifdef CONFIG_SYS_DPAA_QBMAN

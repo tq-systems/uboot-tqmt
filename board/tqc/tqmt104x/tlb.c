@@ -6,6 +6,7 @@
 
 #include <common.h>
 #include <asm/mmu.h>
+#include <linux/sizes.h>
 
 struct fsl_e_tlb_entry tlb_table[] = {
 	/* TLB 0 - for temp stack in cache */
@@ -52,7 +53,11 @@ struct fsl_e_tlb_entry tlb_table[] = {
 #ifndef CONFIG_SYS_NO_FLASH
 	SET_TLB_ENTRY(1, CONFIG_SYS_FLASH_BASE, CONFIG_SYS_FLASH_BASE_PHYS,
 		      MAS3_SX|MAS3_SR, MAS2_W|MAS2_G,
-		      0, 2, BOOKE_PAGESZ_256M, 1),
+		      0, 2, BOOKE_PAGESZ_64M, 1),
+	SET_TLB_ENTRY(1, CONFIG_SYS_FLASH_BASE + SZ_64M,
+		      CONFIG_SYS_FLASH_BASE_PHYS + SZ_64M,
+		      MAS3_SX|MAS3_SR, MAS2_W|MAS2_G,
+		      0, 3, BOOKE_PAGESZ_64M, 1),
 #endif
 
 #ifndef CONFIG_SPL_BUILD
@@ -60,38 +65,38 @@ struct fsl_e_tlb_entry tlb_table[] = {
 	/* *I*G* - PCI */
 	SET_TLB_ENTRY(1, CONFIG_SYS_PCIE1_MEM_VIRT, CONFIG_SYS_PCIE1_MEM_PHYS,
 		      MAS3_SX|MAS3_SW|MAS3_SR, MAS2_I|MAS2_G,
-		      0, 3, BOOKE_PAGESZ_1G, 1),
+		      0, 4, BOOKE_PAGESZ_1G, 1),
 
 	/* *I*G* - PCI I/O */
 	SET_TLB_ENTRY(1, CONFIG_SYS_PCIE1_IO_VIRT, CONFIG_SYS_PCIE1_IO_PHYS,
 		      MAS3_SX|MAS3_SW|MAS3_SR, MAS2_I|MAS2_G,
-		      0, 4, BOOKE_PAGESZ_256K, 1),
+		      0, 5, BOOKE_PAGESZ_256K, 1),
 #endif
 
 	/* Bman/Qman */
 #ifdef CONFIG_SYS_BMAN_MEM_PHYS
 	SET_TLB_ENTRY(1, CONFIG_SYS_BMAN_MEM_BASE, CONFIG_SYS_BMAN_MEM_PHYS,
 		      MAS3_SX|MAS3_SW|MAS3_SR, 0,
-		      0, 5, BOOKE_PAGESZ_16M, 1),
+		      0, 6, BOOKE_PAGESZ_16M, 1),
 	SET_TLB_ENTRY(1, CONFIG_SYS_BMAN_MEM_BASE + 0x01000000,
 		      CONFIG_SYS_BMAN_MEM_PHYS + 0x01000000,
 		      MAS3_SX|MAS3_SW|MAS3_SR, MAS2_I|MAS2_G,
-		      0, 6, BOOKE_PAGESZ_16M, 1),
+		      0, 7, BOOKE_PAGESZ_16M, 1),
 #endif
 #ifdef CONFIG_SYS_QMAN_MEM_PHYS
 	SET_TLB_ENTRY(1, CONFIG_SYS_QMAN_MEM_BASE, CONFIG_SYS_QMAN_MEM_PHYS,
 		      MAS3_SX|MAS3_SW|MAS3_SR, 0,
-		      0, 7, BOOKE_PAGESZ_16M, 1),
+		      0, 8, BOOKE_PAGESZ_16M, 1),
 	SET_TLB_ENTRY(1, CONFIG_SYS_QMAN_MEM_BASE + 0x01000000,
 		      CONFIG_SYS_QMAN_MEM_PHYS + 0x01000000,
 		      MAS3_SX|MAS3_SW|MAS3_SR, MAS2_I|MAS2_G,
-		      0, 8, BOOKE_PAGESZ_16M, 1),
+		      0, 9, BOOKE_PAGESZ_16M, 1),
 #endif
 #endif
 #ifdef CONFIG_SYS_DCSRBAR_PHYS
 	SET_TLB_ENTRY(1, CONFIG_SYS_DCSRBAR, CONFIG_SYS_DCSRBAR_PHYS,
 		      MAS3_SX|MAS3_SW|MAS3_SR, MAS2_I|MAS2_G,
-		      0, 9, BOOKE_PAGESZ_4M, 1),
+		      0, 10, BOOKE_PAGESZ_4M, 1),
 #endif
 
 #if defined(CONFIG_RAMBOOT_PBL) && !defined(CONFIG_SPL_BUILD)
