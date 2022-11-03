@@ -147,6 +147,10 @@ config TARGET_TQMT1022
 	bool "Support TQMT1022"
 	select SUPPORT_SPL
 
+config TARGET_TQMT1024
+	bool "Support TQMT1024"
+	select SUPPORT_SPL
+
 config TARGET_TQMT1040
 	bool "Support TQMT1040"
 	select SUPPORT_SPL

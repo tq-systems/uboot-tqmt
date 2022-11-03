@@ -103,7 +103,9 @@
 #define CONFIG_PCIE1			/* PCIE controler 1 */
 #define CONFIG_PCIE2			/* PCIE controler 2 */
 #define CONFIG_PCIE3			/* PCIE controler 3 */
+#ifndef CONFIG_PPC_T1024
 #define CONFIG_PCIE4			/* PCIE controler 4 */
+#endif
 
 #ifdef CONFIG_PCI
 #define CONFIG_FSL_PCI_INIT		/* Use common FSL init code */
@@ -492,7 +494,9 @@
 #define CONFIG_SYS_QMAN_SWP_ISDR_REG	0xE08
 
 #define  CONFIG_SYS_DPAA_FMAN
+#ifndef CONFIG_PPC_T1024
 #define CONFIG_SYS_DPAA_PME
+#endif
 
 #define CONFIG_QE
 #define CONFIG_U_QE
@@ -660,6 +664,8 @@
 #define RCW_FILE		"fsl_rcw-nor-TQMT1042_SERDES88.bin"
 #elif CONFIG_RCW_CFG_TQMT1042_SERDES8E
 #define RCW_FILE		"fsl_rcw-nor-TQMT1042_SERDES8E.bin"
+#elif CONFIG_RCW_CFG_TQMT1024_SERDES6B
+#define RCW_FILE		"fsl_rcw-nor-TQMT1042_SERDES6B.bin"
 #else
 #define RCW_FILE		""
 #endif
