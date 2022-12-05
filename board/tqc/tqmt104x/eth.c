@@ -171,6 +171,13 @@ int board_phy_config(struct phy_device *phydev)
 	return 0;
 }
 
+void board_ft_fman_fixup_port(void *blob, char * prop, phys_addr_t pa,
+				enum fm_port port, int offset)
+{
+	if (fm_info_get_enet_if(port) == PHY_INTERFACE_MODE_RGMII)
+		fdt_fixup_phy_connection(blob, offset, PHY_INTERFACE_MODE_RGMII_ID);
+}
+
 int board_eth_init(bd_t *bis)
 {
 #ifdef CONFIG_FMAN_ENET
