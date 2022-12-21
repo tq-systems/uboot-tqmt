@@ -597,8 +597,6 @@
 #define CONFIG_SYS_TQMT1042_PLL1_CLKGEN_AUTOREPROG
 #define CONFIG_SYS_849N202_I2C_BUSNR 0x1	/* I2C bus number where 849N202's is located */
 #define CONFIG_SYS_849N202_CLKGEN_ADDR 0x6C	/* 849N202's I2C address */
-/* MAC GTX Clock provided by EC2_GTX_CLK125 */
-#define CONFIG_SYS_TQMT1042_SCFG_EMIIOCR_EC2_GTX_CLK125
 
 /*
  * For booting Linux, the board info and command line data
