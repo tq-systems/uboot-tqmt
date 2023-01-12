@@ -76,6 +76,8 @@
 
 #endif
 
+#define CONFIG_FAT_WRITE
+
 /* support deep sleep */
 #undef CONFIG_DEEP_SLEEP /* TODO: disabled for bringup */
 #if defined(CONFIG_DEEP_SLEEP)
@@ -185,19 +187,7 @@
 #define CONFIG_DIMM_SLOTS_PER_CTLR	1
 #define CONFIG_CHIP_SELECTS_PER_CTRL	1
 
-/*
- * Use fixed DDR timing
- *
- * DDR_RAW_TIMING was only used for bringup/debugging.
- * If DDR_RAW_TIMING shall be used for testing purposes, define
- * CONFIG_SYS_DDR_RAW_TIMING here.
- */
-/*#define CONFIG_SYS_DDR_RAW_TIMING*/
-#ifdef CONFIG_SYS_DDR_RAW_TIMING
-#define CONFIG_FSL_DDR_INTERACTIVE
 #define CONFIG_SYS_FSL_DDR3
-#endif
-
 #define CONFIG_SYS_SDRAM_SIZE  2048    /* for fixed parameter use */
 
 /*
@@ -597,8 +587,6 @@
 #define CONFIG_SYS_TQMT1042_PLL1_CLKGEN_AUTOREPROG
 #define CONFIG_SYS_849N202_I2C_BUSNR 0x1	/* I2C bus number where 849N202's is located */
 #define CONFIG_SYS_849N202_CLKGEN_ADDR 0x6C	/* 849N202's I2C address */
-/* MAC GTX Clock provided by EC2_GTX_CLK125 */
-#define CONFIG_SYS_TQMT1042_SCFG_EMIIOCR_EC2_GTX_CLK125
 
 /*
  * For booting Linux, the board info and command line data
@@ -747,6 +735,18 @@
 		"fi; "                                                         \
 		"setenv getcmd; setenv filesize; setenv blkc; "                \
 		"setenv mmc_blk_start; setenv mmc_file; setenv mmc_name;\0"    \
+	"mmc_fs_update=run set_getcmd; "                                       \
+		"mmc dev ${mmcdev}; mmc rescan; "                              \
+		"if ${getcmd} ${mmc_file}; then "                              \
+			"if itest ${filesize} > 0; then "                      \
+				"echo updating ${mmc_name}...; "               \
+				"fatwrite mmc ${mmcdev}:1 ${loadaddr} ${mmc_file} ${filesize};"\
+			"else echo no ${mmc_name} size!; "                     \
+			"fi; "                                                 \
+		"else echo ${mmc_name} file not found!; "                      \
+		"fi; "                                                         \
+		"setenv getcmd; setenv filesize;"                              \
+		"setenv mmc_file; setenv mmc_name;\0"			       \
 	"update_mmc=setenv mmc_name 'wic image'; "                             \
 		"setenv mmc_blk_start ${wic_mmc_blk_start}; "                  \
 		"setenv mmc_file ${wic_file}; "                                \
@@ -761,20 +761,17 @@
 		"mmc dev ${mmcdev}; mmc rescan; "                              \
 		"mmc read ${loadaddr} ${rcw_mmc_blk_start} 80;"                \
 		"run mmc_update;\0"                                            \
-/* variable position
 	"update_mmc_kernel=setenv mmc_name 'kernel'; "                         \
-		"setenv mmc_blk_start ${kernel_mmc_blk_start}; "               \
 		"setenv mmc_file ${bootfile}; "                                \
-		"run mmc_update;\0"                                            \
+		"run mmc_fs_update;\0"                                         \
 	"update_mmc_fdt=setenv mmc_name 'fdt'; "                               \
-		"setenv mmc_blk_start ${fdt_mmc_blk_start}; "                  \
 		"setenv mmc_file ${fdt_file}; "                                \
-		"run mmc_update;\0"                                            \
+		"run mmc_fs_update;\0"                                         \
 	"update_mmc_rootfs=setenv mmc_name 'rootfs'; "                         \
 		"setenv mmc_blk_start ${rootfs_mmc_blk_start}; "               \
 		"setenv mmc_file ${rootfs_file}; "                             \
-		"run mmc_update;\0"                                            \
-*/	"update_mmc_fman_ucode=setenv mmc_name 'fman_ucode'; "                 \
+		"run mmc_fs_update;\0"                                         \
+	"update_mmc_fman_ucode=setenv mmc_name 'fman_ucode'; "                 \
 		"setenv mmc_blk_start ${fman_ucode_mmc_blk_start}; "           \
 		"setenv mmc_file ${fman_ucode_file}; "                         \
 		"run mmc_update;\0"                                            \

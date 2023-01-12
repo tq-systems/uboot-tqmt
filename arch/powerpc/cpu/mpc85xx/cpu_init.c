@@ -42,26 +42,23 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
-#ifdef CONFIG_SYS_FSL_SINGLE_SOURCE_CLK
+#ifdef CONFIG_SYS_FSL_USB_INTERNAL_CLK
 /*
  * For deriving usb clock from 100MHz sysclk, reference divisor is set
  * to a value of 5, which gives an intermediate value 20(100/5). The
  * multiplication factor integer is set to 24, which when multiplied to
  * above intermediate value provides clock for usb ip.
  */
-void usb_single_source_clk_configure(struct ccsr_usb_phy *usb_phy)
+void usb_internal_clk_configure(struct ccsr_usb_phy *usb_phy)
 {
 	sys_info_t sysinfo;
 
 	get_sys_info(&sysinfo);
-	if (sysinfo.diff_sysclk == 1) {
-		clrbits_be32(&usb_phy->pllprg[1],
-			     CONFIG_SYS_FSL_USB_PLLPRG2_MFI);
-		setbits_be32(&usb_phy->pllprg[1],
-			     CONFIG_SYS_FSL_USB_PLLPRG2_REF_DIV_INTERNAL_CLK |
-			     CONFIG_SYS_FSL_USB_PLLPRG2_MFI_INTERNAL_CLK |
-			     CONFIG_SYS_FSL_USB_INTERNAL_SOC_CLK_EN);
-		}
+	clrbits_be32(&usb_phy->pllprg[1], CONFIG_SYS_FSL_USB_PLLPRG2_MFI);
+	setbits_be32(&usb_phy->pllprg[1],
+		     CONFIG_SYS_FSL_USB_PLLPRG2_REF_DIV_INTERNAL_CLK |
+		     CONFIG_SYS_FSL_USB_PLLPRG2_MFI_INTERNAL_CLK |
+		     CONFIG_SYS_FSL_USB_INTERNAL_SOC_CLK_EN);
 }
 #endif
 
@@ -913,8 +910,8 @@ int cpu_init_r(void)
 			     CONFIG_SYS_FSL_USB_PLLPRG2_PHY1_CLK_EN |
 			     CONFIG_SYS_FSL_USB_PLLPRG2_MFI |
 			     CONFIG_SYS_FSL_USB_PLLPRG2_PLL_EN);
-#ifdef CONFIG_SYS_FSL_SINGLE_SOURCE_CLK
-		usb_single_source_clk_configure(usb_phy);
+#ifdef CONFIG_SYS_FSL_USB_INTERNAL_CLK
+		usb_internal_clk_configure(usb_phy);
 #endif
 		setbits_be32(&usb_phy->port1.ctrl,
 			     CONFIG_SYS_FSL_USB_CTRL_PHY_EN);

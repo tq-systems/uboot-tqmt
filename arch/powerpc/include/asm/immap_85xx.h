@@ -3175,6 +3175,7 @@ struct ccsr_scfg {
 	u32 res3[245];
 	u32 qeioclkcr;	/* 0x400 QUICC Engine IO Clock Control register */
 	u32 emiiocr;	/* 0x404 EMI MDIO Control Register */
+#define CCSR_SCFG_EMIIOCR_EC2_GTX_CLK125 0x08000000
 	u32 sdhciovselcr;/* 0x408 SDHC IO VSEL Control register */
 	u32 qmifrstcr;	/* 0x40c QMAN Interface Reset Control register */
 	u32 res4[60];
