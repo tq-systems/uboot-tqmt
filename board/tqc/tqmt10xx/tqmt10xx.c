@@ -261,7 +261,11 @@ int misc_init_r(void)
 	u32 rcwsr13 = in_be32(&gur->rcwsr[13]);
 	u32 emiiocr;
 
+#ifdef CONFIG_PPC_T1024
+	if ((rcwsr13 & FSL_CORENET_RCWSR13_EC1) != FSL_CORENET_RCWSR13_EC1_RGMII) {
+#else
 	if ((rcwsr13 & FSL_CORENET_RCWSR13_EC1) != FSL_CORENET_RCWSR13_EC1_FM1_DTSEC4_RGMII) {
+#endif
 		emiiocr = (in_be32(&scfg->emiiocr));
 		out_be32(&scfg->emiiocr, emiiocr |= CCSR_SCFG_EMIIOCR_EC2_GTX_CLK125);
 	}
