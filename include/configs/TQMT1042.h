@@ -13,6 +13,6 @@
  */
 #define FDT_FILE		"tqmt1042-stkt104x.dtb"
 
-#include <configs/TQMT104x.h>
+#include <configs/TQMT10xx.h>
 
 #endif	/* __CONFIG_TQMT1042_H */

@@ -4,14 +4,14 @@
  * SPDX-License-Identifier:     GPL-2.0+
  */
 
-#ifndef __CONFIG_TQMT104x_H
-#define __CONFIG_TQMT104x_H
+#ifndef __CONFIG_TQMT10xx_H
+#define __CONFIG_TQMT10xx_H
 
 
 #include <linux/kconfig.h>
 
 /*
- * TQMT104x board configuration file
+ * TQMT10xx board configuration file
  */
 #define CONFIG_PHYS_64BIT
 #define CONFIG_SYS_GENERIC_BOARD
@@ -27,7 +27,7 @@
 #define CONFIG_PCI	/* Enable PCI/PCIE */
 
 #ifdef CONFIG_RAMBOOT_PBL
-#define CONFIG_SYS_FSL_PBL_PBI $(SRCTREE)/board/tqc/tqmt104x/tqmt104x_pbi.cfg
+#define CONFIG_SYS_FSL_PBL_PBI $(SRCTREE)/board/tqc/tqmt10xx/tqmt10xx_pbi.cfg
 #define CONFIG_SYS_FSL_PBL_RCW CONFIG_SYS_FSL_RCW /* use same configuration for RAMBOOT and NOR boot */
 
 #define CONFIG_SPL_MPC8XXX_INIT_DDR_SUPPORT
@@ -670,7 +670,7 @@
 #define DIU_ENVIRONMENT
 #endif
 
-#define TQMT104x_UPDATE_ENV_SETINGS                                            \
+#define TQMT10xx_UPDATE_ENV_SETINGS                                            \
 	"set_getcmd=if test \"${ipmode}\" != static; then "                    \
 			"setenv getcmd dhcp; setenv autoload yes; "            \
 		"else setenv getcmd tftp; setenv autoload no; fi\0"            \
@@ -809,7 +809,7 @@
 	"nfsboot=" CONFIG_NFSBOOTCOMMAND "\0"			\
 	"norboot=" CONFIG_NORBOOTCOMMAND "\0"			\
 	"sdboot=" CONFIG_SDCARDBOOTCOMMAND "\0"			\
-	TQMT104x_UPDATE_ENV_SETINGS
+	TQMT10xx_UPDATE_ENV_SETINGS
 
 #define CONFIG_LINUX
 
@@ -864,4 +864,4 @@
 #define CONFIG_CMD_BLOB
 #endif
 
-#endif	/* __CONFIG_TQMT104x_H */
+#endif	/* __CONFIG_TQMT10xx_H */

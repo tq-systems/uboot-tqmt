@@ -1,7 +1,7 @@
 if TARGET_TQMT1022 || TARGET_TQMT1040 || TARGET_TQMT1042
 
 config SYS_BOARD
-	default "tqmt104x"
+	default "tqmt10xx"
 
 config SYS_VENDOR
 	default "tqc"
@@ -12,12 +12,12 @@ config SYS_CONFIG_NAME
 	default "TQMT1042" if TARGET_TQMT1042
 	
 choice
-	prompt "TQMT104x RCW configuration file"
+	prompt "TQMT10xx RCW configuration file"
 	default RCW_CFG_TQMT1042_SERDES86 if TARGET_TQMT1022
 	default RCW_CFG_TQMT1040_SERDES66 if TARGET_TQMT1040
 	default RCW_CFG_TQMT1042_SERDES86 if TARGET_TQMT1042
 	help
-	  select the RCW configuration file to be used for TQMT104x
+	  select the RCW configuration file to be used for TQMT10xx
 
 config RCW_CFG_TQMT1042_SERDES86
 	bool "TQMT1042 RCW configuration for SERDES mode = 86, default RCW configuration"
@@ -43,8 +43,8 @@ endchoice
 
 config SYS_FSL_RCW
 	string
-	default "board/tqc/tqmt104x/tqmt1042_serdes86_rcw.cfg" if RCW_CFG_TQMT1042_SERDES86
-	default "board/tqc/tqmt104x/tqmt1042_serdes88_rcw.cfg" if RCW_CFG_TQMT1042_SERDES88
-	default "board/tqc/tqmt104x/tqmt1042_serdes8e_rcw.cfg" if RCW_CFG_TQMT1042_SERDES8E
-	default "board/tqc/tqmt104x/tqmt1040_serdes66_rcw.cfg" if RCW_CFG_TQMT1040_SERDES66
+	default "board/tqc/tqmt10xx/tqmt1042_serdes86_rcw.cfg" if RCW_CFG_TQMT1042_SERDES86
+	default "board/tqc/tqmt10xx/tqmt1042_serdes88_rcw.cfg" if RCW_CFG_TQMT1042_SERDES88
+	default "board/tqc/tqmt10xx/tqmt1042_serdes8e_rcw.cfg" if RCW_CFG_TQMT1042_SERDES8E
+	default "board/tqc/tqmt10xx/tqmt1040_serdes66_rcw.cfg" if RCW_CFG_TQMT1040_SERDES66
 endif

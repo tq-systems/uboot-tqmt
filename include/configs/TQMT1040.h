@@ -18,6 +18,6 @@
  */
 #define FDT_FILE         "tqmt1040-stkt104x.dtb"
 
-#include <configs/TQMT104x.h>
+#include <configs/TQMT10xx.h>
 
 #endif	/* __CONFIG_TQMT1040_H */
