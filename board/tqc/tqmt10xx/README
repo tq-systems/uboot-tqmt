@@ -1,17 +1,17 @@
 Overview
 --------
-U-Boot board support for TQMT104x encompasses TQMT1042 and TQMT1042
+U-Boot board support for TQMT10xx encompasses TQMT1042/TQMT1040/TQMT1022/TQMT1024
 TQ embedded modules on TQ baseboard STKT104x.
 
-The baseboard STKT104x supports all modules of the type series TQMT104x and
+The baseboard STKT104x supports all modules of the type series TQMT10xx and
 represents a universal platform for evaluation and development of customer
 specific platforms for those modules.
 
-The baseboard STKT104x supports multiple usage configurations of the T104x's
+The baseboard STKT104x supports multiple usage configurations of the T10xx's
 SERDES lanes.
 
 For additional information, please see:
-http://support.tq-group.com/doku.php?id=en:power:tqmt104x:linux:overview
+https://support.tq-group.com/en/power/tqmt104x
 
 
 T1040 SoC Overview (taken from board/freescale/t104xrdb/README)
