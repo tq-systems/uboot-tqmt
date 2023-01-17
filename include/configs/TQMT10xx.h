@@ -4,14 +4,14 @@
  * SPDX-License-Identifier:     GPL-2.0+
  */
 
-#ifndef __CONFIG_TQMT104x_H
-#define __CONFIG_TQMT104x_H
+#ifndef __CONFIG_TQMT10xx_H
+#define __CONFIG_TQMT10xx_H
 
 
 #include <linux/kconfig.h>
 
 /*
- * TQMT104x board configuration file
+ * TQMT10xx board configuration file
  */
 #define CONFIG_PHYS_64BIT
 #define CONFIG_SYS_GENERIC_BOARD
@@ -27,7 +27,7 @@
 #define CONFIG_PCI	/* Enable PCI/PCIE */
 
 #ifdef CONFIG_RAMBOOT_PBL
-#define CONFIG_SYS_FSL_PBL_PBI $(SRCTREE)/board/tqc/tqmt104x/tqmt104x_pbi.cfg
+#define CONFIG_SYS_FSL_PBL_PBI $(SRCTREE)/board/tqc/tqmt10xx/tqmt10xx_pbi.cfg
 #define CONFIG_SYS_FSL_PBL_RCW CONFIG_SYS_FSL_RCW /* use same configuration for RAMBOOT and NOR boot */
 
 #define CONFIG_SPL_MPC8XXX_INIT_DDR_SUPPORT
@@ -103,7 +103,9 @@
 #define CONFIG_PCIE1			/* PCIE controler 1 */
 #define CONFIG_PCIE2			/* PCIE controler 2 */
 #define CONFIG_PCIE3			/* PCIE controler 3 */
+#ifndef CONFIG_PPC_T1024
 #define CONFIG_PCIE4			/* PCIE controler 4 */
+#endif
 
 #ifdef CONFIG_PCI
 #define CONFIG_FSL_PCI_INIT		/* Use common FSL init code */
@@ -492,7 +494,9 @@
 #define CONFIG_SYS_QMAN_SWP_ISDR_REG	0xE08
 
 #define  CONFIG_SYS_DPAA_FMAN
+#ifndef CONFIG_PPC_T1024
 #define CONFIG_SYS_DPAA_PME
+#endif
 
 #define CONFIG_QE
 #define CONFIG_U_QE
@@ -526,18 +530,6 @@
 #define CONFIG_PHY_VITESSE
 #endif
 
-#ifdef CONFIG_FMAN_ENET
-#define CONFIG_SYS_SGMII1_PHY_ADDR		0x1D
-#define CONFIG_SYS_SGMII2_PHY_ADDR		0x03
-#define CONFIG_SYS_SGMII3_PHY_ADDR		0x1C
-#define CONFIG_SYS_SGMII4_PHY_ADDR		0x01
-#define CONFIG_SYS_RGMII1_PHY_ADDR		0x0E
-#define CONFIG_SYS_RGMII2_PHY_ADDR		0x05
-
-#define CONFIG_MII		/* MII PHY management */
-#define CONFIG_ETHPRIME		"FM1@DTSEC4"
-#define CONFIG_PHY_GIGE		/* Include GbE speed/duplex detection */
-#endif
 
 /*
  * Environment
@@ -660,6 +652,8 @@
 #define RCW_FILE		"fsl_rcw-nor-TQMT1042_SERDES88.bin"
 #elif CONFIG_RCW_CFG_TQMT1042_SERDES8E
 #define RCW_FILE		"fsl_rcw-nor-TQMT1042_SERDES8E.bin"
+#elif CONFIG_RCW_CFG_TQMT1024_SERDES6B
+#define RCW_FILE		"fsl_rcw-nor-TQMT1042_SERDES6B.bin"
 #else
 #define RCW_FILE		""
 #endif
@@ -670,7 +664,7 @@
 #define DIU_ENVIRONMENT
 #endif
 
-#define TQMT104x_UPDATE_ENV_SETINGS                                            \
+#define TQMT10xx_UPDATE_ENV_SETINGS                                            \
 	"set_getcmd=if test \"${ipmode}\" != static; then "                    \
 			"setenv getcmd dhcp; setenv autoload yes; "            \
 		"else setenv getcmd tftp; setenv autoload no; fi\0"            \
@@ -809,7 +803,7 @@
 	"nfsboot=" CONFIG_NFSBOOTCOMMAND "\0"			\
 	"norboot=" CONFIG_NORBOOTCOMMAND "\0"			\
 	"sdboot=" CONFIG_SDCARDBOOTCOMMAND "\0"			\
-	TQMT104x_UPDATE_ENV_SETINGS
+	TQMT10xx_UPDATE_ENV_SETINGS
 
 #define CONFIG_LINUX
 
@@ -864,4 +858,4 @@
 #define CONFIG_CMD_BLOB
 #endif
 
-#endif	/* __CONFIG_TQMT104x_H */
+#endif	/* __CONFIG_TQMT10xx_H */

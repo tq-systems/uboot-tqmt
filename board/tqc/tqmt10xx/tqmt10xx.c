@@ -18,7 +18,7 @@
 #include <asm/fsl_liodn.h>
 #include <fm_eth.h>
 #include "sleep.h"
-#include "tqmt104x.h"
+#include "tqmt10xx.h"
 #include <i2c.h>
 #include <asm/io.h>
 #include <linux/sizes.h>
@@ -261,7 +261,11 @@ int misc_init_r(void)
 	u32 rcwsr13 = in_be32(&gur->rcwsr[13]);
 	u32 emiiocr;
 
+#ifdef CONFIG_PPC_T1024
+	if ((rcwsr13 & FSL_CORENET_RCWSR13_EC1) != FSL_CORENET_RCWSR13_EC1_RGMII) {
+#else
 	if ((rcwsr13 & FSL_CORENET_RCWSR13_EC1) != FSL_CORENET_RCWSR13_EC1_FM1_DTSEC4_RGMII) {
+#endif
 		emiiocr = (in_be32(&scfg->emiiocr));
 		out_be32(&scfg->emiiocr, emiiocr |= CCSR_SCFG_EMIIOCR_EC2_GTX_CLK125);
 	}

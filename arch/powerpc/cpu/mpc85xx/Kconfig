@@ -147,6 +147,10 @@ config TARGET_TQMT1022
 	bool "Support TQMT1022"
 	select SUPPORT_SPL
 
+config TARGET_TQMT1024
+	bool "Support TQMT1024"
+	select SUPPORT_SPL
+
 config TARGET_TQMT1040
 	bool "Support TQMT1040"
 	select SUPPORT_SPL
@@ -209,7 +213,7 @@ source "board/sbc8548/Kconfig"
 source "board/socrates/Kconfig"
 source "board/stx/stxgp3/Kconfig"
 source "board/stx/stxssa/Kconfig"
-source "board/tqc/tqmt104x/Kconfig"
+source "board/tqc/tqmt10xx/Kconfig"
 source "board/tqc/tqmt2081/Kconfig"
 source "board/xes/xpedite520x/Kconfig"
 source "board/xes/xpedite537x/Kconfig"

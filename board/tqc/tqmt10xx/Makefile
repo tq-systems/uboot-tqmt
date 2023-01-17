@@ -7,7 +7,7 @@
 ifdef CONFIG_SPL_BUILD
 obj-y += spl.o
 else
-obj-y	+= tqmt104x.o
+obj-y	+= tqmt10xx.o
 obj-y	+= eth.o
 obj-$(CONFIG_PCI)	+= pci.o
 obj-$(CONFIG_FSL_DIU_FB)+= diu.o
