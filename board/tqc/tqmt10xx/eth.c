@@ -171,6 +171,51 @@ int board_phy_config(struct phy_device *phydev)
 	return 0;
 }
 
+void stkt10xx_retimer_init(void)
+{
+	unsigned int oldbus;
+	int i;
+	u8 v;
+	int ret;
+
+	struct {
+		u8 reg;
+		u8 value;
+		u8 mask;
+	} const cfg[] = {
+		{0xff, 0x0c, 0x0c},
+		{0x00, 0x04, 0x04},
+		{0x0a, 0x0c, 0x0c},
+		{0x2f, 0xc0, 0xf0},
+		{0x31, 0x20, 0x20},
+		{0x3a, 0x00, 0xff},
+		{0x1e, 0x08, 0x08},
+		{0x2d, 0x07, 0x07},
+		{0x15, 0x00, 0x47},
+		{0x0a, 0x00, 0x0c},
+	};
+
+	oldbus = i2c_get_bus_num();
+	i2c_set_bus_num(CONFIG_SYS_XFI_RETIMER_BUS_NUM);
+	for (i = 0; i < ARRAY_SIZE(cfg); i++) {
+		ret = i2c_read(CONFIG_SYS_XFI_RETIMER_ADDR, cfg[i].reg, 1,
+			       &v, sizeof(v));
+		if (ret)
+			break;
+
+		v &= ~cfg[i].mask;
+		v |= cfg[i].mask & cfg[i].value;
+		ret = i2c_write(CONFIG_SYS_XFI_RETIMER_ADDR, cfg[i].reg, 1,
+				&v, sizeof(v));
+		if (ret)
+			break;
+	}
+	if (ret)
+		printf("failed to configure XFI retimer: %d\n", ret);
+
+	i2c_set_bus_num(oldbus);
+}
+
 void board_ft_fman_fixup_port(void *blob, char * prop, phys_addr_t pa,
 				enum fm_port port, int offset)
 {
@@ -184,6 +229,7 @@ int board_eth_init(bd_t *bis)
 	struct memac_mdio_info memac_mdio_info;
 	unsigned int i;
 	int phy_addr = 0;
+	int ret;
 #ifdef CONFIG_VSC9953
         phy_interface_t phy_int;
         struct mii_dev *bus;
@@ -246,6 +292,33 @@ int board_eth_init(bd_t *bis)
 			fm_info_set_mdio(i,
 					 miiphy_get_dev_by_name(
 							DEFAULT_FM_MDIO_NAME));
+	}
+
+	for (i = FM1_10GEC1; i < FM1_10GEC1 + CONFIG_SYS_NUM_FM1_10GEC; i++) {
+		switch (fm_info_get_enet_if(i)) {
+		case PHY_INTERFACE_MODE_XGMII:
+			/* XFI_ENSMB# set retimer to SMBus mode */
+			ret = port_exp_direction_output(CONFIG_SYS_GPIO_EXP_BUS_NUM,
+							CONFIG_SYS_GPIO_XFI_ENSMB_ADDR,
+							CONFIG_SYS_GPIO_XFI_ENSMB_PIN, 0);
+			if (ret)
+				printf("Failed to set retimer SMBus mode: %d\n", ret);
+
+			/* XFI_TX_DIS Enable XFI_TX on SFP module */
+			ret = port_exp_direction_output(CONFIG_SYS_GPIO_EXP_BUS_NUM,
+							CONFIG_SYS_GPIO_XFI_TX_DIS_ADDR,
+							CONFIG_SYS_GPIO_XFI_TX_DIS_PIN, 0);
+
+			if (ret)
+				printf("Failed to enable XFI TX: %d\n", ret);
+
+			stkt10xx_retimer_init();
+
+			fm_info_set_mdio(i, miiphy_get_dev_by_name(DEFAULT_FM_TGEC_MDIO_NAME));
+			break;
+		default:
+			break;
+		}
 	}
 
 #ifdef CONFIG_VSC9953
