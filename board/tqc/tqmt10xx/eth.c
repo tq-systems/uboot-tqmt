@@ -171,6 +171,7 @@ int board_phy_config(struct phy_device *phydev)
 	return 0;
 }
 
+#ifdef CONFIG_SYS_NUM_FM1_10GEC
 void stkt10xx_retimer_init(void)
 {
 	unsigned int oldbus;
@@ -215,6 +216,7 @@ void stkt10xx_retimer_init(void)
 
 	i2c_set_bus_num(oldbus);
 }
+#endif
 
 void board_ft_fman_fixup_port(void *blob, char * prop, phys_addr_t pa,
 				enum fm_port port, int offset)
@@ -294,6 +296,7 @@ int board_eth_init(bd_t *bis)
 							DEFAULT_FM_MDIO_NAME));
 	}
 
+#ifdef CONFIG_SYS_NUM_FM1_10GEC
 	for (i = FM1_10GEC1; i < FM1_10GEC1 + CONFIG_SYS_NUM_FM1_10GEC; i++) {
 		switch (fm_info_get_enet_if(i)) {
 		case PHY_INTERFACE_MODE_XGMII:
@@ -320,6 +323,7 @@ int board_eth_init(bd_t *bis)
 			break;
 		}
 	}
+#endif
 
 #ifdef CONFIG_VSC9953
         /* SerDes configured for QSGMII */
