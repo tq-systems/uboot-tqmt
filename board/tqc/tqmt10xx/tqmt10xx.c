@@ -77,7 +77,7 @@ static int stktxxxx_849n202_clkgen_write_reg(int reg, uchar buf)
 	return 0;
 }
 
-static int port_exp_direction_output(int i2c_busnr, int port_exp_i2c_ad, int gpio_nr, int value)
+int port_exp_direction_output(int i2c_busnr, int port_exp_i2c_ad, int gpio_nr, int value)
 {
 	int ret;
 	int oldbus = i2c_get_bus_num();
