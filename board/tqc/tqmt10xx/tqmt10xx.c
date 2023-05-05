@@ -186,6 +186,9 @@ int board_early_init_r(void)
 		find_tlb_idx((void *)(CONFIG_SYS_FLASH_BASE + SZ_64M), 1);
 	u32 srds_pll_ref_clk_sel_s1;
 	ccsr_gur_t *gur = (void *)(CONFIG_SYS_MPC85xx_GUTS_ADDR);
+#ifdef CONFIG_TQMT1024
+	u32 srds_prtcl_s1;
+#endif
 	int ret;
 
 	/*
@@ -232,22 +235,20 @@ int board_early_init_r(void)
 			FSL_CORENET2_RCWSR5_SRDS_PLL_REF_CLK_SEL_S1_PLL1;
 	srds_pll_ref_clk_sel_s1 >>= FSL_CORENET2_RCWSR5_SRDS_PLL_REF_CLK_SEL_S1_PLL1_SHIFT;
 
-	switch (srds_pll_ref_clk_sel_s1) {
-		/* SRDS_PLL_REF_CLK_SEL_S1 set to 125 MHz
-		 * reprogram clock generator, reset PLL, reset 88E1340 ethernet phy */
-		case 0x1:
-			printf("SRDS_PLL_REF_CLK_SEL_S1 = 1 (125MHz) detected in RCW\n");
-			ret = clkgen_849n202_125mhz_init();
-			if (ret != 0)
-				printf("error on reconfiguring serdes pll1 to 125 MHz\n");
-			break;
-		/* SRDS_PLL_REF_CLK_SEL_S1 set to 100 MHz, no action required */
-		case 0x0:
-		default:
-			break;
+#ifdef CONFIG_TQMT1024
+	srds_prtcl_s1 = in_be32(&gur->rcwsr[4]) &
+				FSL_CORENET2_RCWSR4_SRDS1_PRTCL;
+	srds_prtcl_s1 >>= FSL_CORENET2_RCWSR4_SRDS1_PRTCL_SHIFT;
+	if (srds_prtcl_s1 != 0x95 && srds_prtcl_s1 != 0x99 && srds_pll_ref_clk_sel_s1 == 0x1) {
+#else
+	if (srds_pll_ref_clk_sel_s1 == 0x1) {
+#endif
+		printf("SRDS_PLL_REF_CLK_SEL_S1 = 1 (125MHz) detected in RCW\n");
+		ret = clkgen_849n202_125mhz_init();
+		if (ret != 0)
+			printf("error on reconfiguring serdes pll1 to 125 MHz\n");
 	}
 #endif
-
 	return 0;
 }
 
