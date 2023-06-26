@@ -46,11 +46,17 @@ config RCW_CFG_TQMT1024_SERDES6B
         help
           Select SERDES mode = 6B in reset configuration word.
 
+config RCW_CFG_TQMT1024_SERDES95
+        bool "TQMT10xx RCW configuration for SERDES mode = 95, default RCW configuration"
+        help
+          Select SERDES mode = 95 in reset configuration word.
+
 endchoice
 
 config SYS_FSL_RCW
 	string
 	default "board/tqc/tqmt10xx/tqmt1024_serdes6b_rcw.cfg" if RCW_CFG_TQMT1024_SERDES6B
+	default "board/tqc/tqmt10xx/tqmt1024_serdes95_rcw.cfg" if RCW_CFG_TQMT1024_SERDES95
 	default "board/tqc/tqmt10xx/tqmt1042_serdes86_rcw.cfg" if RCW_CFG_TQMT1042_SERDES86
 	default "board/tqc/tqmt10xx/tqmt1042_serdes88_rcw.cfg" if RCW_CFG_TQMT1042_SERDES88
 	default "board/tqc/tqmt10xx/tqmt1042_serdes8e_rcw.cfg" if RCW_CFG_TQMT1042_SERDES8E
