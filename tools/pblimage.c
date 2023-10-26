@@ -40,6 +40,9 @@ static union
 	unsigned char l;
 } endian_test = { {'l', '?', '?', 'b'} };
 
+static int pblimage_verify_header(unsigned char *ptr, int image_size,
+				  struct image_tool_params *params);
+
 #define ENDIANNESS ((char)endian_test.l)
 
 /*
@@ -187,24 +190,62 @@ static void add_end_cmd(void)
 
 void pbl_load_uboot(int ifd, struct image_tool_params *params)
 {
-	FILE *fp_uboot;
+	FILE *fp_uboot, *fp_rcw;
+	uint8_t *data;
 	int size;
+	int rcwsize;
+	int ret;
 
-	/* parse the rcw.cfg file. */
-	pbl_parser(params->imagename);
+	fp_rcw = fopen(params->imagename, "r");
+	if (!fp_rcw)
+		goto err_open;
 
-	/* parse the pbi.cfg file. */
-	pbl_parser(params->imagename2);
+	ret = fseek(fp_rcw, 0, SEEK_END);
+	if (ret < 0)
+		goto err_file;
 
-	fp_uboot = fopen(params->datafile, "r");
-	if (fp_uboot == NULL) {
-		printf("Error: %s open failed\n", params->datafile);
-		exit(EXIT_FAILURE);
+	rcwsize = ftell(fp_rcw);
+	if (rcwsize < 0)
+		goto err_file;
+
+	ret = fseek(fp_rcw, 0, SEEK_SET);
+	if (ret < 0)
+		goto err_file;
+
+	data = malloc(rcwsize);
+	if (!data)
+		goto err_alloc;
+
+	if (fread(data, sizeof(*data), rcwsize, fp_rcw) != rcwsize)
+		goto err_alloc;
+
+	fclose(fp_rcw);
+
+	if (pblimage_verify_header(data, rcwsize, params) != 0) {
+		/* Try to parse file */
+		pbl_parser(params->imagename);
+	} else {
+		rcwsize -= 8;
+		memcpy(pmem_buf, data, rcwsize);
+		pmem_buf += rcwsize;
+		pbl_size += rcwsize;
 	}
 
-	load_uboot(fp_uboot);
+	/* parse the pbi.cfg file. */
+	if (params->imagename2[0] != '\0')
+		pbl_parser(params->imagename2);
+
+	if (params->datafile) {
+		fp_uboot = fopen(params->datafile, "r");
+		if (fp_uboot == NULL) {
+			printf("Error: %s open failed\n", params->datafile);
+			exit(EXIT_FAILURE);
+		}
+
+		load_uboot(fp_uboot);
+		fclose(fp_uboot);
+	}
 	add_end_cmd();
-	fclose(fp_uboot);
 	lseek(ifd, 0, SEEK_SET);
 
 	size = pbl_size;
@@ -213,6 +254,17 @@ void pbl_load_uboot(int ifd, struct image_tool_params *params)
 			params->imagefile, strerror(errno));
 		exit(EXIT_FAILURE);
 	}
+
+	return;
+
+err_alloc:
+	free(data);
+err_file:
+	fclose(fp_rcw);
+err_open:
+	printf("Error:%s - Can't open\n", params->imagename);
+	exit(EXIT_FAILURE);
+
 }
 
 static int pblimage_check_image_types(uint8_t type)
@@ -265,21 +317,24 @@ int pblimage_check_params(struct image_tool_params *params)
 	if (!params)
 		return EXIT_FAILURE;
 
-	fp_uboot = fopen(params->datafile, "r");
-	if (fp_uboot == NULL) {
-		printf("Error: %s open failed\n", params->datafile);
-		exit(EXIT_FAILURE);
-	}
-	fd = fileno(fp_uboot);
+	if (params->datafile) {
+		fp_uboot = fopen(params->datafile, "r");
+		if (fp_uboot == NULL) {
+			printf("Error: %s open failed\n", params->datafile);
+			exit(EXIT_FAILURE);
+		}
+		fd = fileno(fp_uboot);
 
-	if (fstat(fd, &st) == -1) {
-		printf("Error: Could not determine u-boot image size. %s\n",
-		       strerror(errno));
-		exit(EXIT_FAILURE);
-	}
+		if (fstat(fd, &st) == -1) {
+			printf("Error: Could not determine u-boot image size. %s\n",
+			       strerror(errno));
+			exit(EXIT_FAILURE);
+		}
 
-	/* For the variable size, we need to pad it to 64 byte boundary */
-	uboot_size = roundup(st.st_size, 64);
+		/* For the variable size, pad it to 64 byte boundary */
+		uboot_size = roundup(st.st_size, 64);
+		fclose(fp_uboot);
+	}
 
 	if (params->arch == IH_ARCH_ARM) {
 		arch_flag = IH_ARCH_ARM;

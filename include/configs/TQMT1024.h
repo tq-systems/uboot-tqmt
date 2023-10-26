@@ -12,7 +12,7 @@
  * name and path of device tree set in default environment
  * for nfs boot and sd card boot
  */
-#define FDT_FILE		"tqmt1024-stkt104x.dtb"
+#define FDT_FILE		"tqmt1024-stkt104x-6b.dtb"
 
 #include <configs/TQMT10xx.h>
 
@@ -39,5 +39,16 @@
 #define CONFIG_SYS_GPIO_XFI_ENSMB_PIN	6
 #define CONFIG_SYS_GPIO_XFI_TX_DIS_ADDR	0x23
 #define CONFIG_SYS_GPIO_XFI_TX_DIS_PIN	1
+
+#ifndef CONFIG_SYS_NO_FLASH
+#define CONFIG_SYS_CSPR0_EXT		CONFIG_SYS_NOR_CSPR_EXT
+#define CONFIG_SYS_CSPR0		CONFIG_SYS_NOR_CSPR
+#define CONFIG_SYS_AMASK0		CONFIG_SYS_NOR_AMASK
+#define CONFIG_SYS_CSOR0		CONFIG_SYS_NOR_CSOR
+#define CONFIG_SYS_CS0_FTIM0		CONFIG_SYS_NOR_FTIM0_400
+#define CONFIG_SYS_CS0_FTIM1		CONFIG_SYS_NOR_FTIM1_400
+#define CONFIG_SYS_CS0_FTIM2		CONFIG_SYS_NOR_FTIM2_400
+#define CONFIG_SYS_CS0_FTIM3		CONFIG_SYS_NOR_FTIM3_400
+#endif
 
 #endif	/* __CONFIG_TQMT1024_H */
